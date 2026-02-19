@@ -8,7 +8,7 @@
  *
  * Lab Requirements demonstrated:
  *  ✅ Semantic HTML: <main>, <section>, <header> (back nav)
- *  ✅ useState – manages a "player ready" flag and info panel toggle
+ *  ✅ useState – manages player-ready flag and info panel toggle
  *  ✅ useParams – reads the dynamic :id from the URL
  *  ✅ Reusable <Header> and <StatusCard> components with props
  * ═══════════════════════════════════════════════════════════════
@@ -20,7 +20,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import StatusCard from '../components/StatusCard';
 
-// Combined TMDB + Mock data so we can look up movie metadata by ID
 import { MOOD_MOVIES } from '../data/moodData';
 
 const TMDB_API_KEY = '05a3f3071ad3fa222ab689fb62ed0df1';
@@ -28,7 +27,7 @@ const VIDEASY_BASE = 'https://player.videasy.net/movie';
 const TMDB_IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 
 const Watch = () => {
-    const { id } = useParams();    // dynamic :id from the URL
+    const { id } = useParams();   // dynamic :id from the URL
     const navigate = useNavigate();
 
     /*
@@ -83,27 +82,17 @@ const Watch = () => {
             {/* Reusable Header with a contextual subtitle prop */}
             <Header subtitle={movieMeta ? `Now Streaming: ${movieMeta.title}` : 'Loading stream…'} />
 
-            <main
-                className="max-w-7xl mx-auto px-6 py-8"
-                style={{ minHeight: '80vh' }}
-            >
+            <main className="max-w-7xl mx-auto px-6 py-8" style={{ minHeight: '80vh' }}>
 
                 {/* ── Back navigation ── */}
                 <div className="mb-5 flex items-center gap-3">
                     <button
                         onClick={() => navigate('/')}
                         style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            background: 'var(--vr-surface2)',
-                            border: '1px solid var(--vr-border)',
-                            borderRadius: 999,
-                            padding: '8px 20px',
-                            color: 'var(--vr-text)',
-                            fontWeight: 600,
-                            fontSize: '0.875rem',
-                            cursor: 'pointer',
+                            display: 'inline-flex', alignItems: 'center', gap: '8px',
+                            background: 'var(--vr-surface2)', border: '1px solid var(--vr-border)',
+                            borderRadius: 999, padding: '8px 20px', color: 'var(--vr-text)',
+                            fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
                             transition: 'background 0.2s',
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(168,85,247,0.18)'}
@@ -112,18 +101,15 @@ const Watch = () => {
                         ← Back to Dashboard
                     </button>
 
-                    {/* Show/hide movie info toggle — useState driven */}
+                    {/* Show/hide info toggle — useState driven */}
                     <button
                         onClick={() => setShowInfo((prev) => !prev)}
                         style={{
                             background: showInfo ? 'rgba(168,85,247,0.18)' : 'var(--vr-surface2)',
-                            border: '1px solid var(--vr-border)',
-                            borderRadius: 999,
+                            border: '1px solid var(--vr-border)', borderRadius: 999,
                             padding: '8px 20px',
                             color: showInfo ? '#a855f7' : 'var(--vr-muted)',
-                            fontWeight: 600,
-                            fontSize: '0.875rem',
-                            cursor: 'pointer',
+                            fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
                             transition: 'all 0.2s',
                         }}
                     >
@@ -132,10 +118,7 @@ const Watch = () => {
                 </div>
 
                 {/* ── Two-column layout: player + optional info panel ── */}
-                <div
-                    className="flex gap-6 flex-wrap"
-                    style={{ alignItems: 'flex-start' }}
-                >
+                <div className="flex gap-6 flex-wrap" style={{ alignItems: 'flex-start' }}>
 
                     {/* ══════════════════════════════════════════════
               LEFT COLUMN – Videasy iframe player
@@ -144,19 +127,14 @@ const Watch = () => {
                         aria-label="Movie Player"
                         style={{ flex: showInfo ? '1 1 60%' : '1 1 100%', minWidth: 300 }}
                     >
-                        {/* Aspect-ratio wrapper */}
                         <div className="player-wrapper">
                             {/* Loading shimmer overlay — hidden once iframe fires onLoad */}
                             {!playerReady && (
                                 <div
                                     className="skeleton"
                                     style={{
-                                        position: 'absolute',
-                                        inset: 0,
-                                        zIndex: 10,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
+                                        position: 'absolute', inset: 0, zIndex: 10,
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
                                         borderRadius: 'var(--vr-card-radius)',
                                     }}
                                 >
@@ -171,8 +149,7 @@ const Watch = () => {
 
                             {/*
                 Videasy embed iframe.
-                `allowFullScreen` lets the user go fullscreen.
-                `onLoad` sets playerReady → true (useState update).
+                onLoad sets playerReady → true (useState update).
               */}
                             <iframe
                                 src={videasyUrl}
@@ -184,25 +161,14 @@ const Watch = () => {
                             />
                         </div>
 
-                        {/* Attribution note */}
-                        <p
-                            style={{
-                                marginTop: '0.75rem',
-                                fontSize: '0.7rem',
-                                color: 'var(--vr-muted)',
-                                textAlign: 'center',
-                            }}
-                        >
+                        <p style={{
+                            marginTop: '0.75rem', fontSize: '0.7rem',
+                            color: 'var(--vr-muted)', textAlign: 'center',
+                        }}>
                             Powered by{' '}
-                            <a
-                                href="https://videasy.net"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{ color: 'var(--vr-accent)' }}
-                            >
-                                Videasy
-                            </a>{' '}
-                            · TMDB ID: {id}
+                            <a href="https://videasy.net" target="_blank" rel="noopener noreferrer"
+                                style={{ color: 'var(--vr-accent)' }}>Videasy</a>
+                            {' '}· TMDB ID: {id}
                         </p>
                     </section>
 
@@ -234,14 +200,7 @@ const Watch = () => {
 
                                     {/* Title */}
                                     <div>
-                                        <h1
-                                            style={{
-                                                fontSize: '1.3rem',
-                                                fontWeight: 800,
-                                                lineHeight: 1.2,
-                                                marginBottom: '0.4rem',
-                                            }}
-                                        >
+                                        <h1 style={{ fontSize: '1.3rem', fontWeight: 800, lineHeight: 1.2, marginBottom: '0.4rem' }}>
                                             {movieMeta.title}
                                         </h1>
                                         {movieMeta.tagline && (
@@ -251,7 +210,7 @@ const Watch = () => {
                                         )}
                                     </div>
 
-                                    {/* Stats row via .map() – [MAP-RENDER] */}
+                                    {/* Stats row via .map() [MAP-RENDER] */}
                                     <div className="flex flex-col gap-2">
                                         {[
                                             {
@@ -291,24 +250,16 @@ const Watch = () => {
 
                                     {/* Overview */}
                                     {movieMeta.overview && (
-                                        <div
-                                            style={{
-                                                background: 'var(--vr-surface2)',
-                                                border: '1px solid var(--vr-border)',
-                                                borderRadius: 'var(--vr-radius)',
-                                                padding: '1rem',
-                                            }}
-                                        >
-                                            <p
-                                                style={{
-                                                    fontSize: '0.75rem',
-                                                    fontWeight: 700,
-                                                    color: 'var(--vr-muted)',
-                                                    textTransform: 'uppercase',
-                                                    letterSpacing: '0.06em',
-                                                    marginBottom: '0.5rem',
-                                                }}
-                                            >
+                                        <div style={{
+                                            background: 'var(--vr-surface2)',
+                                            border: '1px solid var(--vr-border)',
+                                            borderRadius: 'var(--vr-radius)',
+                                            padding: '1rem',
+                                        }}>
+                                            <p style={{
+                                                fontSize: '0.75rem', fontWeight: 700, color: 'var(--vr-muted)',
+                                                textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.5rem',
+                                            }}>
                                                 Synopsis
                                             </p>
                                             <p style={{ fontSize: '0.83rem', lineHeight: 1.6, color: '#c4c3cf' }}>
@@ -317,7 +268,7 @@ const Watch = () => {
                                         </div>
                                     )}
 
-                                    {/* Genres rendered via .map() [MAP-RENDER] */}
+                                    {/* Genres via .map() [MAP-RENDER] */}
                                     {movieMeta.genres && movieMeta.genres.length > 0 && (
                                         <div className="flex flex-wrap gap-2">
                                             {movieMeta.genres.map((genre) => (
@@ -327,10 +278,8 @@ const Watch = () => {
                                                         fontSize: '0.72rem',
                                                         background: 'rgba(168,85,247,0.12)',
                                                         border: '1px solid rgba(168,85,247,0.3)',
-                                                        borderRadius: 999,
-                                                        padding: '4px 12px',
-                                                        color: '#a855f7',
-                                                        fontWeight: 600,
+                                                        borderRadius: 999, padding: '4px 12px',
+                                                        color: '#a855f7', fontWeight: 600,
                                                     }}
                                                 >
                                                     {genre.name}
@@ -344,11 +293,8 @@ const Watch = () => {
                                 /* Loading skeleton for the info panel */
                                 <div className="flex flex-col gap-3">
                                     {[280, 40, 80, 60, 200].map((h, i) => (
-                                        <div
-                                            key={i}
-                                            className="skeleton"
-                                            style={{ height: h, borderRadius: 'var(--vr-radius)' }}
-                                        />
+                                        <div key={i} className="skeleton"
+                                            style={{ height: h, borderRadius: 'var(--vr-radius)' }} />
                                     ))}
                                 </div>
                             )}
@@ -358,16 +304,11 @@ const Watch = () => {
                 </div>
             </main>
 
-            <footer
-                style={{
-                    borderTop: '1px solid var(--vr-border)',
-                    padding: '1.25rem',
-                    textAlign: 'center',
-                    color: 'var(--vr-muted)',
-                    fontSize: '0.72rem',
-                    marginTop: '3rem',
-                }}
-            >
+            <footer style={{
+                borderTop: '1px solid var(--vr-border)', padding: '1.25rem',
+                textAlign: 'center', color: 'var(--vr-muted)',
+                fontSize: '0.72rem', marginTop: '3rem',
+            }}>
                 VibeReel · AppDev Lab 3 · Streaming via Videasy · Data from TMDB
             </footer>
         </>

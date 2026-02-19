@@ -1,7 +1,8 @@
 /**
  * StatusCard.jsx  ─ Lab 3, Task 1: Reusable Component #3 (bonus)
  * ──────────────────────────────────────────────────────────────
- * A small statistics/info pill displayed in the Dashboard header.
+ * A small statistics/info pill displayed in the Dashboard header
+ * and Watch page sidebar.
  * Accepts all data via props, making it fully reusable.
  *
  * Props:
@@ -17,7 +18,7 @@ import React from 'react';
 const StatusCard = ({ icon, label, value, color = "rgba(168,85,247,0.18)" }) => {
     return (
         <div className="status-card">
-            {/* Icon badge — color is injected via the `color` prop */}
+            {/* Icon badge — background color is injected via the `color` prop */}
             <div
                 className="sc-icon"
                 style={{ background: color }}

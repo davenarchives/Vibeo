@@ -5,11 +5,11 @@
  *
  *  ✅ Lab 2, Task 3 – Dynamic Rendering via .map()
  *     Lines marked with [MAP-RENDER] show where .map() is used
- *     to render both the TMDB API list and the Mock ML data list.
+ *     to render both the TMDB API list and the local mock ML data.
  *
  *  ✅ Lab 3, Task 3 – Interactivity with useState
- *     `viewMode` state (line ~47) drives the toggle between
- *     "Global Trending" and "My Mood Matches" views.
+ *     `viewMode` state drives the toggle between
+ *     "Global Trending" (TMDB API) and "My Mood Matches" (Mock ML).
  *     A second state `showInsights` toggles the ML insight panel.
  *
  *  ✅ Semantic HTML: <main>, <section>, <article> are used.
@@ -65,8 +65,8 @@ const Dashboard = () => {
      * This is the core of the interactive toggle behaviour.
      */
     const displayMovies = viewMode === VIEW_TRENDING
-        ? trendingMovies   // Live TMDB data
-        : MOOD_MOVIES;     // Mock CBF / ML data
+        ? trendingMovies  // Live TMDB data
+        : MOOD_MOVIES;    // Mock CBF / ML data
 
     // Navigate to the watch page when a card is clicked
     const handleCardClick = (movie) => {
@@ -95,14 +95,11 @@ const Dashboard = () => {
             SECTION 1 – Dashboard stats row
             Uses <StatusCard> reusable component with props
         ══════════════════════════════════════════════════ */}
-                <section
-                    aria-label="Dashboard Statistics"
-                    className="flex flex-wrap gap-4 mb-8"
-                >
+                <section aria-label="Dashboard Statistics" className="flex flex-wrap gap-4 mb-8">
+
                     {/*
             [MAP-RENDER] ─ Lab 2, Task 3
             Renders StatusCard list via .map() over a config array.
-            This keeps the JSX DRY and demonstrates dynamic rendering.
           */}
                     {[
                         {
@@ -147,17 +144,14 @@ const Dashboard = () => {
                 <section aria-label="View Controls" className="mb-6">
                     <div className="flex flex-wrap items-center justify-between gap-4">
 
-                        {/* Section heading */}
                         <h2 className="section-title" style={{ minWidth: 200 }}>
-                            {viewMode === VIEW_TRENDING
-                                ? '🌐 Global Trending'
-                                : '🤖 My Mood Matches'}
+                            {viewMode === VIEW_TRENDING ? '🌐 Global Trending' : '🤖 My Mood Matches'}
                         </h2>
 
                         {/* ── Toggle pill ─────────────────────────────────
                 Clicking either button calls setViewMode(),
                 which updates state and triggers a re-render
-                with a different movie array [Lab 3, Task 3]
+                with a different movie array. [Lab 3, Task 3]
             ── */}
                         <div className="toggle-pill" role="group" aria-label="View Mode Toggle">
                             <button
@@ -179,7 +173,7 @@ const Dashboard = () => {
                             </button>
                         </div>
 
-                        {/* ── ML Insights toggle button (Mood mode only) ── */}
+                        {/* ── ML Insights toggle (Mood mode only) ── */}
                         {viewMode === VIEW_MOOD && (
                             <button
                                 onClick={() => setShowInsights(prev => !prev)} // ← useState toggle
@@ -208,10 +202,7 @@ const Dashboard = () => {
             Only visible when showInsights === true [useState]
         ══════════════════════════════════════════════════ */}
                 {viewMode === VIEW_MOOD && showInsights && (
-                    <section
-                        aria-label="ML Algorithm Insights"
-                        className="mb-6 fade-in-up"
-                    >
+                    <section aria-label="ML Algorithm Insights" className="mb-6 fade-in-up">
                         <div className="ml-insight-panel">
                             <h3 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.75rem', color: '#a855f7' }}>
                                 🤖 How your recommendations are generated
@@ -276,7 +267,7 @@ const Dashboard = () => {
         ══════════════════════════════════════════════════ */}
                 <section aria-label="Movie Grid">
 
-                    {/* ── Loading state ── */}
+                    {/* Loading state */}
                     {loading && viewMode === VIEW_TRENDING && (
                         <div className="flex flex-col items-center justify-center py-24 gap-4">
                             <div className="spinner" />
@@ -286,30 +277,26 @@ const Dashboard = () => {
                         </div>
                     )}
 
-                    {/* ── Error state ── */}
+                    {/* Error state */}
                     {error && (
-                        <div
-                            style={{
-                                background: 'rgba(239,68,68,0.1)',
-                                border: '1px solid rgba(239,68,68,0.3)',
-                                borderRadius: 'var(--vr-radius)',
-                                padding: '1.5rem',
-                                color: '#f87171',
-                                textAlign: 'center',
-                            }}
-                        >
+                        <div style={{
+                            background: 'rgba(239,68,68,0.1)',
+                            border: '1px solid rgba(239,68,68,0.3)',
+                            borderRadius: 'var(--vr-radius)',
+                            padding: '1.5rem',
+                            color: '#f87171',
+                            textAlign: 'center',
+                        }}>
                             ⚠️ {error}
                         </div>
                     )}
 
-                    {/* ── Movie Grid ────────────────────────────────────
-              [MAP-RENDER] ─ Lab 2, Task 3
-              `displayMovies.map()` iterates over either the TMDB
-              trending array OR the MOOD_MOVIES mock array,
-              rendering one <MovieCard> per item.
-              The `animationDelay` prop staggers the fade-in-up
-              animation so cards appear one after another.
-          ── */}
+                    {/*
+            [MAP-RENDER] ─ Lab 2, Task 3
+            `displayMovies.map()` iterates over either the TMDB
+            trending array OR the MOOD_MOVIES mock array,
+            rendering one <MovieCard> per item.
+          */}
                     {!loading && !error && (
                         <div className="movie-grid">
                             {displayMovies.map((movie, index) => (
@@ -326,37 +313,23 @@ const Dashboard = () => {
                 </section>
             </main>
 
-            {/* ── Semantic footer ── */}
-            <footer
-                style={{
-                    borderTop: '1px solid var(--vr-border)',
-                    padding: '1.5rem',
-                    textAlign: 'center',
-                    color: 'var(--vr-muted)',
-                    fontSize: '0.75rem',
-                    marginTop: '3rem',
-                }}
-            >
+            {/* Semantic footer */}
+            <footer style={{
+                borderTop: '1px solid var(--vr-border)',
+                padding: '1.5rem',
+                textAlign: 'center',
+                color: 'var(--vr-muted)',
+                fontSize: '0.75rem',
+                marginTop: '3rem',
+            }}>
                 <p>
                     VibeReel — AppDev Lab 3 Project &nbsp;·&nbsp;
                     Powered by{' '}
-                    <a
-                        href="https://www.themoviedb.org/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: 'var(--vr-accent)' }}
-                    >
-                        TMDB API
-                    </a>
+                    <a href="https://www.themoviedb.org/" target="_blank" rel="noopener noreferrer"
+                        style={{ color: 'var(--vr-accent)' }}>TMDB API</a>
                     {' '}&amp;{' '}
-                    <a
-                        href="https://videasy.net/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: 'var(--vr-accent)' }}
-                    >
-                        Videasy
-                    </a>
+                    <a href="https://videasy.net/" target="_blank" rel="noopener noreferrer"
+                        style={{ color: 'var(--vr-accent)' }}>Videasy</a>
                 </p>
             </footer>
         </>

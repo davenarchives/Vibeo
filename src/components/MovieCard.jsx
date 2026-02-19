@@ -6,15 +6,15 @@
  * demonstrating props-driven reusability.
  *
  * Props:
- *   movie           {object}   – TMDB/mock movie object
- *   movie.id        {number}
- *   movie.title     {string}
- *   movie.poster_path {string}
- *   movie.release_date {string}
- *   movie.vote_average {number}
- *   movie.matchPercentage {number|undefined}  – only for mood mode
- *   onClick         {function} – called when card is clicked
- *   animationDelay  {string}   – CSS animation-delay for stagger
+ *   movie                  {object}          – TMDB/mock movie object
+ *   movie.id               {number}
+ *   movie.title            {string}
+ *   movie.poster_path      {string}
+ *   movie.release_date     {string}
+ *   movie.vote_average     {number}
+ *   movie.matchPercentage  {number|undefined} – only in mood mode
+ *   onClick                {function}         – called when card is clicked
+ *   animationDelay         {string}           – CSS animation-delay for stagger
  * ──────────────────────────────────────────────────────
  */
 
@@ -24,7 +24,7 @@ const TMDB_IMG_BASE = "https://image.tmdb.org/t/p/w500";
 const FALLBACK_IMG = "https://via.placeholder.com/300x450/1c1c28/8b8a9a?text=No+Poster";
 
 const MovieCard = ({ movie, onClick, animationDelay = "0ms" }) => {
-    // Local state to handle image loading error gracefully
+    // Local state to handle image loading errors gracefully
     const [imgError, setImgError] = useState(false);
 
     if (!movie) return null;
