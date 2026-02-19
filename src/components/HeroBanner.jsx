@@ -193,7 +193,7 @@ const HeroBanner = ({ movies = [] }) => {
       */}
             <div className="hero-content" key={activeIndex}>
                 <p className="hero-eyebrow">
-                    🎬 Spotlight&nbsp;
+                    Spotlight&nbsp;
                     <span className="hero-eyebrow__num">#{activeIndex + 1}</span>
                 </p>
 
