@@ -14,9 +14,9 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // Pages
-import Dashboard from './pages/Dashboard';
-import Watch from './pages/Watch';
-import Play from './pages/Play';
+import Dashboard from '@/pages/Dashboard';
+import Watch from '@/pages/Watch';
+import Play from '@/pages/Play';
 
 const App = () => {
   return (

@@ -8,17 +8,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 
-import Header from '../components/Header';
-import { MOOD_MOVIES } from '../data/moodData';
-
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-
-/* ── Stream providers ── */
-const PROVIDERS = [
-    { key: 'videasy', label: 'Videasy', url: (id) => `https://player.videasy.net/movie/${id}` },
-    { key: 'vidsrc', label: 'VidSrc', url: (id) => `https://vidsrc.to/embed/movie/${id}` },
-    { key: '2embed', label: '2Embed', url: (id) => `https://www.2embed.cc/embed/${id}` },
-];
+import Header from '@/components/layout/Header';
+import { MOOD_MOVIES } from '@/data/moodData';
+import { TMDB_API_KEY, STREAM_PROVIDERS } from '@/config/constants';
+import '@/components/common/Loading/styles.css';
+import './styles.css';
 
 const Play = () => {
     const { id } = useParams();
@@ -32,7 +26,7 @@ const Play = () => {
     const [showSlowWarning, setShowSlowWarning] = useState(false);
     const slowTimer = useRef(null);
 
-    const provider = PROVIDERS[providerIdx];
+    const provider = STREAM_PROVIDERS[providerIdx];
     const embedUrl = provider.url(id);
 
     /* ── Fetch movie title ── */
@@ -65,7 +59,7 @@ const Play = () => {
         clearTimeout(slowTimer.current);
     };
 
-    const switchProvider = () => setProviderIdx(i => (i + 1) % PROVIDERS.length);
+    const switchProvider = () => setProviderIdx(i => (i + 1) % STREAM_PROVIDERS.length);
 
     return (
         <div className="page-wrapper">
@@ -82,7 +76,7 @@ const Play = () => {
                 </nav>
 
                 <div className="play-provider-pills">
-                    {PROVIDERS.map((p, i) => (
+                    {STREAM_PROVIDERS.map((p, i) => (
                         <button
                             key={p.key}
                             className={`play-provider-pill ${i === providerIdx ? 'active' : ''}`}
@@ -110,7 +104,7 @@ const Play = () => {
                                     <div className="play-slow-warning">
                                         <p>Taking too long? Try a different source.</p>
                                         <button className="play-switch-btn" onClick={switchProvider}>
-                                            Switch to {PROVIDERS[(providerIdx + 1) % PROVIDERS.length].label}
+                                            Switch to {STREAM_PROVIDERS[(providerIdx + 1) % STREAM_PROVIDERS.length].label}
                                         </button>
                                     </div>
                                 )}
@@ -126,7 +120,7 @@ const Play = () => {
                                 {provider.label} couldn't serve this title right now.
                             </p>
                             <button className="play-switch-btn" onClick={switchProvider}>
-                                Try {PROVIDERS[(providerIdx + 1) % PROVIDERS.length].label} instead
+                                Try {STREAM_PROVIDERS[(providerIdx + 1) % STREAM_PROVIDERS.length].label} instead
                             </button>
                         </div>
                     )}

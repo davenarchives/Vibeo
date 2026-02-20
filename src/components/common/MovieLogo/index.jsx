@@ -1,21 +1,6 @@
-/**
- * MovieLogo.jsx — Movie Title Logo Component
- * ─────────────────────────────────────────────────────────────
- * Displays the movie's official title logo from fanart.tv.
- * Gracefully falls back to a styled text title if no logo is
- * available or while loading.
- *
- * Props:
- *   tmdbId    {number|string}  — TMDB movie ID
- *   title     {string}         — Fallback text title
- *   className {string}         — Additional CSS class
- *   maxHeight {string}         — Max height of logo image (default: '90px')
- *   style     {object}         — Extra inline styles
- * ─────────────────────────────────────────────────────────────
- */
-
 import React, { useState } from 'react';
-import useFanartLogo from '../hooks/useFanartLogo';
+import useFanartLogo from '../../../hooks/useFanartLogo.js';
+import './styles.css';
 
 const MovieLogo = ({ tmdbId, title, className = '', maxHeight = '90px', style = {} }) => {
     const { logoUrl, loading } = useFanartLogo(tmdbId);

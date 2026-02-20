@@ -1,16 +1,7 @@
-/**
- * Header.jsx  ─ Lab 3, Task 1: Reusable Component #2
- * ──────────────────────────────────────────────────────
- * Top navigation bar — inspired by Yorumi's header:
- * logo left, nav center, user icon right.
- *
- * Props:
- *   subtitle {string} – small tagline under logo (optional)
- * ──────────────────────────────────────────────────────
- */
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import ThemeSelector from '@/components/common/ThemeSelector';
+import './styles.css';
 
 const Header = ({ subtitle }) => {
     const navigate = useNavigate();
@@ -26,6 +17,10 @@ const Header = ({ subtitle }) => {
                 {/* ── Logo ── */}
                 <button className="topbar__logo" onClick={() => navigate('/')} aria-label="VibeReel Home">
                     <img src="/vibereel.png" alt="VibeReel" className="topbar__logo-img" />
+                    <span className="topbar__logo-text">
+                        <span className="topbar__logo-vibe">Vibe</span>
+                        <span className="topbar__logo-reel">Reel</span>
+                    </span>
                 </button>
 
                 {/* ── Nav links (desktop) ── */}
@@ -62,6 +57,8 @@ const Header = ({ subtitle }) => {
                             aria-label="Search movies"
                         />
                     </div>
+
+                    <ThemeSelector />
 
                     {/* User avatar pill */}
                     <div className="topbar__avatar" aria-label="User Profile">

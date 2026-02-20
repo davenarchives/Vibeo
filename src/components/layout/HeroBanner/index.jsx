@@ -1,21 +1,11 @@
-/**
- * HeroBanner.jsx — Sliding Spotlight Carousel with Trailer Playback
- * ─────────────────────────────────────────────────────────────
- * Netflix-style hero banner:
- *  • YouTube trailer plays immediately, always muted
- *  • Trailer covers the entire spotlight area (fullscreen)
- *  • Backdrop image only used as fallback if no trailer exists
- *  • Auto-advance pauses while trailer plays
- *  • Trailers fetched from TMDB /movie/{id}/videos endpoint
- * ─────────────────────────────────────────────────────────────
- */
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import MovieLogo from './MovieLogo';
+import MovieLogo from '../../common/MovieLogo';
+import HeroSlide from './HeroSlide';
+import TrailerPlayer from './TrailerPlayer';
+import { useTrailers } from '../../../hooks/useTrailers';
+import './styles.css';
 
-const TMDB_BACKDROP_BASE = 'https://image.tmdb.org/t/p/original';
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const INTERVAL_MS = 8000;
 
 const HeroBanner = ({ movies = [] }) => {
@@ -24,47 +14,10 @@ const HeroBanner = ({ movies = [] }) => {
     const timerRef = useRef(null);
 
     const [activeIndex, setActiveIndex] = useState(0);
-    const [trailerKeys, setTrailerKeys] = useState({});   // { movieId: youtubeKey }
     const [trailerReady, setTrailerReady] = useState(false);
 
-    /* ── Fetch trailers for all hero movies on mount ── */
-    useEffect(() => {
-        if (!total || !TMDB_API_KEY) return;
-
-        const fetchTrailers = async () => {
-            const keys = {};
-            await Promise.all(
-                movies.slice(0, 5).map(async (movie) => {
-                    try {
-                        const res = await fetch(
-                            `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${TMDB_API_KEY}&language=en-US`
-                        );
-                        if (!res.ok) return;
-                        const data = await res.json();
-                        const results = data.results || [];
-
-                        // Priority: Official Trailer → Trailer → Teaser → any YouTube
-                        const official = results.find(
-                            v => v.site === 'YouTube' && v.type === 'Trailer' && v.official
-                        );
-                        const trailer = results.find(
-                            v => v.site === 'YouTube' && v.type === 'Trailer'
-                        );
-                        const teaser = results.find(
-                            v => v.site === 'YouTube' && v.type === 'Teaser'
-                        );
-                        const any = results.find(v => v.site === 'YouTube');
-
-                        const pick = official || trailer || teaser || any;
-                        if (pick) keys[movie.id] = pick.key;
-                    } catch (_) { }
-                })
-            );
-            setTrailerKeys(keys);
-        };
-
-        fetchTrailers();
-    }, [movies, total]);
+    // Custom hook for fetching trailers
+    const { trailerKeys } = useTrailers(movies);
 
     /* ── Start/stop auto-advance ── */
     const startAutoAdvance = useCallback(() => {
@@ -117,11 +70,6 @@ const HeroBanner = ({ movies = [] }) => {
     const currentMovie = movies[activeIndex];
     const currentTrailerKey = currentMovie ? trailerKeys[currentMovie.id] : null;
 
-    // YouTube embed URL — always muted, no controls, autoplay, loop
-    const ytEmbedUrl = currentTrailerKey
-        ? `https://www.youtube.com/embed/${currentTrailerKey}?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&loop=1&playlist=${currentTrailerKey}&start=5&enablejsapi=1&origin=${window.location.origin}`
-        : null;
-
     // ── Skeleton while TMDB data loads ─────────────────────────
     if (!total) {
         return (
@@ -138,59 +86,30 @@ const HeroBanner = ({ movies = [] }) => {
             onKeyDown={handleKey}
             tabIndex={-1}
         >
-            {/*
-        ── SLIDE TRACK ──────────────────────────────────────────
-        Backdrop images — only shown as fallback when no trailer.
-        When a trailer is ready it covers this entirely.
-      */}
+            {/* ── SLIDE TRACK ────────────────────────────────────────── */}
             <div
                 className="hero-track"
                 style={{ transform: `translateX(-${activeIndex * 100}%)` }}
                 aria-live="off"
             >
                 {movies.slice(0, 5).map((movie, i) => (
-                    <div key={movie.id} className="hero-slide" aria-hidden={i !== activeIndex}>
-                        {movie.backdrop_path && (
-                            <div
-                                className="hero-bg"
-                                style={{
-                                    backgroundImage: `url(${TMDB_BACKDROP_BASE}${movie.backdrop_path})`,
-                                }}
-                            />
-                        )}
-                        <div className="hero-grad-left" />
-                        <div className="hero-grad-bottom" />
-                        <div className="hero-grad-top" />
-                    </div>
+                    <HeroSlide key={movie.id} movie={movie} isActive={i === activeIndex} />
                 ))}
             </div>
 
-            {/*
-        ── TRAILER LAYER ─────────────────────────────────────────
-        YouTube iframe covers the entire spotlight area.
-        Shown immediately — no delay, no backdrop-first.
-      */}
-            {ytEmbedUrl && (
-                <div className={`hero-trailer-wrap ${trailerReady ? 'hero-trailer-wrap--visible' : ''}`}>
-                    <iframe
-                        key={currentTrailerKey}
-                        src={ytEmbedUrl}
-                        title={`${currentMovie.title} trailer`}
-                        allow="autoplay; encrypted-media"
-                        allowFullScreen
-                        className="hero-trailer-iframe"
+            {/* ── TRAILER LAYER ───────────────────────────────────────── */}
+            {currentTrailerKey && (
+                <div className={`hero-trailer-container ${trailerReady ? 'visible' : 'hidden'}`}>
+                    <TrailerPlayer
+                        trailerKey={currentTrailerKey}
+                        title={currentMovie.title}
                         onLoad={() => setTrailerReady(true)}
                     />
-                    {/* Gradient overlays on top of the trailer */}
-                    <div className="hero-grad-left" />
-                    <div className="hero-grad-bottom" />
-                    <div className="hero-grad-top" />
                 </div>
             )}
 
-            {/*
-        ── CONTENT LAYER ─────────────────────────────────────────
-      */}
+
+            {/* ── CONTENT LAYER ───────────────────────────────────────── */}
             <div className="hero-content" key={activeIndex}>
                 <p className="hero-eyebrow">
                     Spotlight&nbsp;
@@ -201,7 +120,7 @@ const HeroBanner = ({ movies = [] }) => {
                     <MovieLogo
                         tmdbId={movies[activeIndex].id}
                         title={movies[activeIndex].title}
-                        maxHeight="120px"
+                        maxHeight="60px"
                     />
                 </h1>
 

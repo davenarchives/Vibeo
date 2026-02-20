@@ -1,22 +1,8 @@
-/**
- * MovieCard.jsx  ─ Lab 3, Task 1: Reusable Component #1
- * ──────────────────────────────────────────────────────
- * Poster card used inside horizontal carousel rows.
- * Inspired by Yorumi/Mercy card style: rating badge in
- * top-right corner, hover overlay with play button.
- *
- * Props:
- *   movie          {object}   – TMDB/mock movie object
- *   onClick        {function} – called when card is clicked
- *   animationDelay {string}   – CSS stagger delay
- *   showMatchBadge {boolean}  – show AI match % (mood mode)
- * ──────────────────────────────────────────────────────
- */
-
 import React, { useState } from 'react';
 
 const TMDB_IMG_BASE = 'https://image.tmdb.org/t/p/w342';
 const FALLBACK_IMG = 'https://placehold.co/220x330/1a1a2e/6b6b8a?text=No+Poster';
+import './styles.css';
 
 const MovieCard = ({ movie, onClick, animationDelay = '0ms', showMatchBadge = false }) => {
     const [imgError, setImgError] = useState(false);

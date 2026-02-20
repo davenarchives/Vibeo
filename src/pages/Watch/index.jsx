@@ -9,48 +9,25 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-import Header from '../components/Header';
-import MovieRow from '../components/MovieRow';
-import MovieLogo from '../components/MovieLogo';
-import { MOOD_MOVIES } from '../data/moodData';
-
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const TMDB_IMG = 'https://image.tmdb.org/t/p/w500';
-const TMDB_BD = 'https://image.tmdb.org/t/p/original';
-
+import Header from '@/components/layout/Header';
+import MovieRow from '@/components/layout/MovieRow';
+import MovieLogo from '@/components/common/MovieLogo';
+import Footer from '@/components/layout/Footer';
+import { useMovieDetail } from '@/hooks/useMovieDetail';
+import { TMDB_IMAGE_BASE, TMDB_BACKDROP_BASE } from '@/config/constants';
+import '@/components/common/Loading/styles.css';
+import './styles.css';
 
 const Watch = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
     /* ── State ── */
-    const [movieMeta, setMovieMeta] = useState(null);
-    const [similar, setSimilar] = useState([]);
-
-    /* ── Fetch movie data ── */
-    useEffect(() => {
-        setMovieMeta(null);
-        setSimilar([]);
-
-        const local = MOOD_MOVIES.find(m => m.id === Number(id));
-        if (local) { setMovieMeta(local); return; }
-
-        const fetchAll = async () => {
-            try {
-                const [metaRes, simRes] = await Promise.all([
-                    fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=en-US`),
-                    fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${TMDB_API_KEY}&language=en-US`),
-                ]);
-                if (metaRes.ok) setMovieMeta(await metaRes.json());
-                if (simRes.ok) setSimilar((await simRes.json()).results?.slice(0, 12) || []);
-            } catch (_) { }
-        };
-        fetchAll();
-    }, [id]);
+    const { movie: movieMeta, similar, loading } = useMovieDetail(id);
 
     /* ── Derived data ── */
-    const backdropUrl = movieMeta?.backdrop_path ? `${TMDB_BD}${movieMeta.backdrop_path}` : null;
-    const posterUrl = movieMeta?.poster_path ? `${TMDB_IMG}${movieMeta.poster_path}` : null;
+    const backdropUrl = movieMeta?.backdrop_path ? `${TMDB_BACKDROP_BASE}${movieMeta.backdrop_path}` : null;
+    const posterUrl = movieMeta?.poster_path ? `${TMDB_IMAGE_BASE}${movieMeta.poster_path}` : null;
     const year = movieMeta?.release_date?.substring(0, 4);
     const rating = movieMeta?.vote_average ? Number(movieMeta.vote_average).toFixed(1) : null;
     const certification = movieMeta?.adult ? 'R' : 'PG-13';
@@ -86,11 +63,11 @@ const Watch = () => {
                         {/* Info column */}
                         {movieMeta && (
                             <div className="detail-hero__info">
-                                <h1 className="detail-hero__title">
+                                <h1 className="detail-hero__title watch-title">
                                     <MovieLogo
                                         tmdbId={movieMeta.id || id}
                                         title={movieMeta.title}
-                                        maxHeight="90px"
+                                        maxHeight="60px"
                                     />
                                 </h1>
 
@@ -127,7 +104,7 @@ const Watch = () => {
                         )}
 
                         {/* Loading state */}
-                        {!movieMeta && (
+                        {loading && (
                             <div className="loading-center" style={{ padding: '4rem 0' }}>
                                 <div className="spinner" />
                                 <p>Loading movie details...</p>
@@ -151,14 +128,10 @@ const Watch = () => {
                 </div>
             </main>
 
-            <footer className="site-footer">
-                <div className="site-footer__inner">
-                    <span className="site-footer__logo">VibeReel</span>
-                    <p>Streaming via Videasy · Data from TMDB</p>
-                    <p>&copy; 2026 VibeReel</p>
-                </div>
-            </footer>
-        </div>
+
+
+            <Footer />
+        </div >
     );
 };
 

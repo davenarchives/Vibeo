@@ -1,21 +1,6 @@
-/**
- * MovieRow.jsx
- * ─────────────────────────────────────────────────────
- * Horizontal scrollable carousel row — inspired by
- * Yorumi's "Trending", "Popular This Season" rows and
- * Mercy's category rows.
- *
- * Props:
- *   title       {string}    – Row heading
- *   movies      {Array}     – Array of movie objects
- *   onCardClick {function}  – Called with (movie) on click
- *   showBadge   {boolean}   – Show matchPercentage badge
- *   icon        {string}    – Emoji icon before title
- * ─────────────────────────────────────────────────────
- */
-
 import React, { useRef } from 'react';
-import MovieCard from './MovieCard';
+import MovieCard from '../../common/MovieCard';
+import './styles.css';
 
 const MovieRow = ({ title, movies = [], onCardClick, showBadge = false, icon = '' }) => {
     const rowRef = useRef(null);
@@ -55,11 +40,6 @@ const MovieRow = ({ title, movies = [], onCardClick, showBadge = false, icon = '
             </div>
 
             {/* ── Scrollable track ── */}
-            {/*
-        [MAP-RENDER] ─ Lab 2, Task 3
-        Each movie in the array is rendered as a <MovieCard>
-        via the .map() method, producing a dynamic list of cards.
-      */}
             <div className="row-track" ref={rowRef}>
                 {movies.map((movie, index) => (
                     <div className="row-card-wrap" key={movie.id}>
