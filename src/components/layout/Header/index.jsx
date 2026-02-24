@@ -64,37 +64,40 @@ const Header = ({ subtitle }) => {
 
                     {/* Authentication Section */}
                     {currentUser ? (
-                        <div className="topbar__user" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button
+                            className="topbar__user"
+                            onClick={logout}
+                            title="Click to Logout"
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                background: 'rgba(255, 255, 255, 0.05)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                padding: '0.2rem 0.75rem 0.2rem 0.2rem',
+                                borderRadius: '2rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease',
+                                color: '#e2e8f0',
+                                fontWeight: '500',
+                                fontSize: '0.875rem'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                                e.currentTarget.style.borderColor = 'var(--c-accent-lt)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                            }}
+                        >
                             <img
                                 src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.email}&background=random`}
                                 alt={currentUser.displayName || 'User Profile'}
-                                style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.1)' }}
+                                style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
                             />
-                            <button
-                                onClick={logout}
-                                style={{
-                                    background: 'rgba(255, 255, 255, 0.05)',
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                                    color: '#e2e8f0',
-                                    padding: '0.4rem 0.8rem',
-                                    borderRadius: '1rem',
-                                    fontSize: '0.875rem',
-                                    fontWeight: '500',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s ease',
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                                    e.target.style.color = '#fff';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.target.style.background = 'rgba(255, 255, 255, 0.05)';
-                                    e.target.style.color = '#e2e8f0';
-                                }}
-                            >
-                                Logout
-                            </button>
-                        </div>
+                            Logout
+                        </button>
                     ) : (
                         <button
                             className="topbar__login-btn"
