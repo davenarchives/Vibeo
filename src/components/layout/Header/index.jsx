@@ -72,28 +72,6 @@ const Header = () => {
                             className="topbar__user"
                             onClick={logout}
                             title="Click to Logout"
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                background: 'rgba(255, 255, 255, 0.05)',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                padding: '0.2rem 0.75rem 0.2rem 0.2rem',
-                                borderRadius: '2rem',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                color: '#e2e8f0',
-                                fontWeight: '500',
-                                fontSize: '0.875rem'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                                e.currentTarget.style.borderColor = 'var(--c-accent-lt)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                            }}
                         >
                             <img
                                 src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.email}&background=random`}
@@ -106,29 +84,6 @@ const Header = () => {
                         <button
                             className="topbar__login-btn"
                             onClick={loginWithGoogle}
-                            style={{
-                                background: 'var(--c-accent-lt)',
-                                border: 'none',
-                                color: '#fff',
-                                padding: '0.5rem 1.25rem',
-                                borderRadius: '1.5rem',
-                                fontWeight: '600',
-                                fontSize: '0.875rem',
-                                cursor: 'pointer',
-                                boxShadow: '0 4px 15px var(--c-accent-glow)',
-                                transition: 'all 0.3s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem'
-                            }}
-                            onMouseEnter={(e) => {
-                                e.target.style.transform = 'translateY(-1px)';
-                                e.target.style.boxShadow = '0 6px 20px var(--c-accent-glow)';
-                            }}
-                            onMouseLeave={(e) => {
-                                e.target.style.transform = 'none';
-                                e.target.style.boxShadow = '0 4px 15px var(--c-accent-glow)';
-                            }}
                         >
                             Login
                         </button>

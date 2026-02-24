@@ -206,3 +206,45 @@
     opacity: 0.7;
     cursor: not-allowed;
 }
+
+/* Header Buttons Extra Styles */
+.topbar__user {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.75rem 0.2rem 0.2rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #e2e8f0;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.topbar__user:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--c-accent-lt);
+}
+
+.topbar__login-btn {
+    background: var(--c-accent-lt);
+    border: none;
+    color: #fff;
+    padding: 0.5rem 1.25rem;
+    border-radius: 1.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px var(--c-accent-glow);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.topbar__login-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px var(--c-accent-glow);
+}
