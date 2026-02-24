@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import ThemeSelector from '@/components/common/ThemeSelector';
 import './styles.css';
 
 const Header = ({ subtitle }) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { currentUser, loginWithGoogle, logout } = useAuth();
     const [search, setSearch] = useState('');
 
     const isHome = location.pathname === '/';
@@ -60,10 +62,70 @@ const Header = ({ subtitle }) => {
 
                     <ThemeSelector />
 
-                    {/* User avatar pill */}
-                    <div className="topbar__avatar" aria-label="User Profile">
-                        <span>VR</span>
-                    </div>
+                    {/* Authentication Section */}
+                    {currentUser ? (
+                        <div className="topbar__user" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <img
+                                src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.email}&background=random`}
+                                alt={currentUser.displayName || 'User Profile'}
+                                style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,255,255,0.1)' }}
+                            />
+                            <button
+                                onClick={logout}
+                                style={{
+                                    background: 'rgba(255, 255, 255, 0.05)',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    color: '#e2e8f0',
+                                    padding: '0.4rem 0.8rem',
+                                    borderRadius: '1rem',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '500',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                                    e.target.style.color = '#fff';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.background = 'rgba(255, 255, 255, 0.05)';
+                                    e.target.style.color = '#e2e8f0';
+                                }}
+                            >
+                                Logout
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            className="topbar__login-btn"
+                            onClick={loginWithGoogle}
+                            style={{
+                                background: 'var(--c-accent-lt)',
+                                border: 'none',
+                                color: '#fff',
+                                padding: '0.5rem 1.25rem',
+                                borderRadius: '1.5rem',
+                                fontWeight: '600',
+                                fontSize: '0.875rem',
+                                cursor: 'pointer',
+                                boxShadow: '0 4px 15px var(--c-accent-glow)',
+                                transition: 'all 0.3s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.target.style.transform = 'translateY(-1px)';
+                                e.target.style.boxShadow = '0 6px 20px var(--c-accent-glow)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.target.style.transform = 'none';
+                                e.target.style.boxShadow = '0 4px 15px var(--c-accent-glow)';
+                            }}
+                        >
+                            Login
+                        </button>
+                    )}
                 </div>
 
             </div>
