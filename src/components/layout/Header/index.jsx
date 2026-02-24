@@ -98,8 +98,9 @@ const Header = () => {
                             <img
                                 src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.email}&background=random`}
                                 alt={currentUser.displayName || 'User Profile'}
-                                style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
-                            Logout
+                                style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                            />
+                            <span style={{ marginLeft: '8px' }}>Logout</span>
                         </button>
                     ) : (
                         <button
