@@ -22,10 +22,8 @@ const Onboarding = () => {
         const isSelected = selectedMovies.some(m => m.id === movie.id);
         if (isSelected) {
             setSelectedMovies(selectedMovies.filter(m => m.id !== movie.id));
-        } else {
-            if (selectedMovies.length < 5) {
-                setSelectedMovies([...selectedMovies, movie]);
-            }
+        } else if (selectedMovies.length < 5) {
+            setSelectedMovies([...selectedMovies, movie]);
         }
     };
 
@@ -65,9 +63,10 @@ const Onboarding = () => {
                         {movies.slice(0, 60).map((movie) => {
                             const isSelected = selectedMovies.some(m => m.id === movie.id);
                             return (
-                                <div
+                                <button
                                     key={movie.id}
                                     onClick={() => toggleMovie(movie)}
+                                    type="button"
                                     className={`onboarding-movie-card ${isSelected ? 'selected' : ''}`}
                                 >
                                     <img
@@ -96,7 +95,7 @@ const Onboarding = () => {
                                             </svg>
                                         </div>
                                     )}
-                                </div>
+                                </button>
                             );
                         })}
                     </div>

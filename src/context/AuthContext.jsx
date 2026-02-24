@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, provider, db } from '../firebase';
@@ -9,6 +9,7 @@ export const useAuth = () => {
     return useContext(AuthContext);
 };
 
+// eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [isOnboarded, setIsOnboarded] = useState(false);
@@ -69,13 +70,13 @@ export const AuthProvider = ({ children }) => {
         return unsubscribe;
     }, []);
 
-    const value = {
+    const value = useMemo(() => ({
         currentUser,
         isOnboarded,
         loginWithGoogle,
         logout,
         saveOnboardingData
-    };
+    }), [currentUser, isOnboarded]);
 
     return (
         <AuthContext.Provider value={value}>

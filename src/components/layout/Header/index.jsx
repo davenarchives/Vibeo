@@ -4,13 +4,12 @@ import { useAuth } from '@/context/AuthContext';
 import ThemeSelector from '@/components/common/ThemeSelector';
 import './styles.css';
 
-const Header = ({ subtitle }) => {
+const Header = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { currentUser, loginWithGoogle, logout } = useAuth();
     const [search, setSearch] = useState('');
 
-    const isHome = location.pathname === '/';
     const isOnboardingPage = location.pathname === '/onboarding';
 
     return (
@@ -99,8 +98,7 @@ const Header = ({ subtitle }) => {
                             <img
                                 src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.email}&background=random`}
                                 alt={currentUser.displayName || 'User Profile'}
-                                style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
-                            />
+                                style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
                             Logout
                         </button>
                     ) : (
