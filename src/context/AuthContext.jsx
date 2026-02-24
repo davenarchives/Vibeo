@@ -12,7 +12,7 @@ export const useAuth = () => {
 // eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
-    const [isOnboarded, setIsOnboarded] = useState(false);
+    const [isOnboarded, setIsOnboarded] = useState(null);
     const [loading, setLoading] = useState(true);
 
     // Sign in with Google
@@ -47,8 +47,9 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            setCurrentUser(user);
             if (user) {
+                setCurrentUser(user);
+                setIsOnboarded(null);
                 try {
                     const userRef = doc(db, 'users', user.uid);
                     const userSnap = await getDoc(userRef);
@@ -62,6 +63,7 @@ export const AuthProvider = ({ children }) => {
                     setIsOnboarded(false);
                 }
             } else {
+                setCurrentUser(null);
                 setIsOnboarded(false);
             }
             setLoading(false);

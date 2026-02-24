@@ -27,10 +27,11 @@ const App = () => {
 
   useEffect(() => {
     // Basic route protection for onboarding flow
-    if (currentUser) {
-      if (!isOnboarded && location.pathname !== '/onboarding') {
+    // We strictly check if isOnboarded is explicitly true or false to prevent flashing
+    if (currentUser && isOnboarded !== null) {
+      if (isOnboarded === false && location.pathname !== '/onboarding') {
         navigate('/onboarding');
-      } else if (isOnboarded && location.pathname === '/onboarding') {
+      } else if (isOnboarded === true && location.pathname === '/onboarding') {
         navigate('/');
       }
     }
