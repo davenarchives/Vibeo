@@ -11,6 +11,7 @@ const Header = ({ subtitle }) => {
     const [search, setSearch] = useState('');
 
     const isHome = location.pathname === '/';
+    const isOnboardingPage = location.pathname === '/onboarding';
 
     return (
         <header className="topbar" role="banner">
@@ -26,39 +27,43 @@ const Header = ({ subtitle }) => {
                 </button>
 
                 {/* ── Nav links (desktop) ── */}
-                <nav className="topbar__nav" aria-label="Site Navigation">
-                    {[
-                        { label: 'Home', path: '/' },
-                        { label: 'Trending', path: '/' },
-                        { label: 'Mood Match', path: '/' },
-                    ].map(link => (
-                        <button
-                            key={link.label}
-                            className={`topbar__nav-link ${location.pathname === link.path && link.label === 'Home' ? 'active' : ''}`}
-                            onClick={() => navigate(link.path)}
-                        >
-                            {link.label}
-                        </button>
-                    ))}
-                </nav>
+                {!isOnboardingPage && (
+                    <nav className="topbar__nav" aria-label="Site Navigation">
+                        {[
+                            { label: 'Home', path: '/' },
+                            { label: 'Trending', path: '/' },
+                            { label: 'Mood Match', path: '/' },
+                        ].map(link => (
+                            <button
+                                key={link.label}
+                                className={`topbar__nav-link ${location.pathname === link.path && link.label === 'Home' ? 'active' : ''}`}
+                                onClick={() => navigate(link.path)}
+                            >
+                                {link.label}
+                            </button>
+                        ))}
+                    </nav>
+                )}
 
                 {/* ── Right side: search + avatar ── */}
                 <div className="topbar__right">
                     {/* Search box */}
-                    <div className="topbar__search">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                            <circle cx="11" cy="11" r="8" />
-                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                        </svg>
-                        <input
-                            type="text"
-                            placeholder="Search titles…"
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            aria-label="Search movies"
-                        />
-                    </div>
+                    {!isOnboardingPage && (
+                        <div className="topbar__search">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                            <input
+                                type="text"
+                                placeholder="Search titles…"
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                aria-label="Search movies"
+                            />
+                        </div>
+                    )}
 
                     <ThemeSelector />
 

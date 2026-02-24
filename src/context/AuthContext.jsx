@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
-import { auth, provider } from '../firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, provider, db } from '../firebase';
 
 const AuthContext = createContext();
 
@@ -10,6 +11,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
+    const [isOnboarded, setIsOnboarded] = useState(false);
     const [loading, setLoading] = useState(true);
 
     // Sign in with Google
@@ -22,9 +24,45 @@ export const AuthProvider = ({ children }) => {
         return signOut(auth);
     };
 
+    // Save Onboarding Data
+    const saveOnboardingData = async (selectedMovies) => {
+        if (!currentUser) return;
+        try {
+            const userRef = doc(db, 'users', currentUser.uid);
+            await setDoc(userRef, {
+                onboarded: true,
+                favoriteMovies: selectedMovies,
+                email: currentUser.email,
+                displayName: currentUser.displayName,
+                createdAt: new Date()
+            }, { merge: true });
+
+            setIsOnboarded(true);
+        } catch (error) {
+            console.error("Error saving onboarding data:", error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
             setCurrentUser(user);
+            if (user) {
+                try {
+                    const userRef = doc(db, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
+                    if (userSnap.exists() && userSnap.data().onboarded) {
+                        setIsOnboarded(true);
+                    } else {
+                        setIsOnboarded(false);
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                    setIsOnboarded(false);
+                }
+            } else {
+                setIsOnboarded(false);
+            }
             setLoading(false);
         });
 
@@ -33,8 +71,10 @@ export const AuthProvider = ({ children }) => {
 
     const value = {
         currentUser,
+        isOnboarded,
         loginWithGoogle,
         logout,
+        saveOnboardingData
     };
 
     return (

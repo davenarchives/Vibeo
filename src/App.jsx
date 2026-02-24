@@ -10,15 +10,32 @@
  * ───────────────────────────────────────────────────────────
  */
 
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 
 // Pages
 import Dashboard from '@/pages/Dashboard';
 import Watch from '@/pages/Watch';
 import Play from '@/pages/Play';
+import Onboarding from '@/pages/Onboarding';
 
 const App = () => {
+  const { currentUser, isOnboarded } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Basic route protection for onboarding flow
+    if (currentUser) {
+      if (!isOnboarded && location.pathname !== '/onboarding') {
+        navigate('/onboarding');
+      } else if (isOnboarded && location.pathname === '/onboarding') {
+        navigate('/');
+      }
+    }
+  }, [currentUser, isOnboarded, location.pathname, navigate]);
+
   return (
     /*
      * <Routes> replaces the deprecated <Switch> from React Router v5.
@@ -28,6 +45,7 @@ const App = () => {
       {/* Homepage – Discovery Dashboard */}
       <Route path="/" element={<Dashboard />} />
 
+      <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/watch/:id" element={<Watch />} />
 
       {/* Play page – dedicated player */}
