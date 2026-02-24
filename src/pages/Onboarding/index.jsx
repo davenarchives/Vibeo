@@ -67,7 +67,6 @@ const Onboarding = () => {
                                 <div
                                     key={movie.id}
                                     onClick={() => toggleMovie(movie)}
-                                    title={movie.title}
                                     style={{
                                         position: 'relative',
                                         borderRadius: '12px',
