@@ -67,6 +67,7 @@ const Onboarding = () => {
                                 <div
                                     key={movie.id}
                                     onClick={() => toggleMovie(movie)}
+                                    title={movie.title}
                                     style={{
                                         position: 'relative',
                                         borderRadius: '12px',
@@ -74,17 +75,55 @@ const Onboarding = () => {
                                         cursor: 'pointer',
                                         aspectRatio: '2/3',
                                         transform: isSelected ? 'scale(0.95)' : 'scale(1)',
-                                        transition: 'all 0.3s ease',
-                                        boxShadow: isSelected ? '0 0 0 4px var(--c-accent-lt)' : 'none'
+                                        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                        boxShadow: isSelected ? '0 0 0 4px var(--c-accent-lt)' : '0 4px 15px rgba(0,0,0,0.3)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (!isSelected) e.currentTarget.style.transform = 'scale(1.05)';
+                                        e.currentTarget.querySelector('.movie-info-overlay').style.opacity = '1';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!isSelected) e.currentTarget.style.transform = 'scale(1)';
+                                        e.currentTarget.querySelector('.movie-info-overlay').style.opacity = '0';
                                     }}
                                 >
                                     <img
                                         src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                                         alt={movie.title}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: isSelected ? 0.7 : 1 }}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: isSelected ? 0.7 : 1, transition: 'all 0.3s ease' }}
                                     />
+
+                                    {/* Hover Information Overlay */}
+                                    <div
+                                        className="movie-info-overlay"
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            padding: '2rem 1rem 1rem 1rem',
+                                            background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 60%, transparent 100%)',
+                                            opacity: isSelected ? 1 : 0,
+                                            transition: 'opacity 0.3s ease',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            justifyContent: 'flex-end',
+                                            pointerEvents: 'none'
+                                        }}
+                                    >
+                                        <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: '700', color: '#fff', textShadow: '0 2px 4px rgba(0,0,0,0.5)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                            {movie.title}
+                                        </h3>
+                                        {movie.release_date && (
+                                            <span style={{ fontSize: '0.8rem', color: '#a1a1aa', marginTop: '4px' }}>
+                                                {new Date(movie.release_date).getFullYear()}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Selection Checkmark */}
                                     {isSelected && (
-                                        <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--c-accent-lt)', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                                        <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--c-accent-lt)', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
                                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                                 <polyline points="20 6 9 17 4 12"></polyline>
                                             </svg>
