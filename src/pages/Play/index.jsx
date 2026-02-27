@@ -10,6 +10,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import Header from '@/components/layout/Header';
 import { MOOD_MOVIES } from '@/data/moodData';
+import { useUserMovies } from '@/hooks/useUserMovies';
 import { TMDB_API_KEY, STREAM_PROVIDERS } from '@/config/constants';
 import '@/components/common/Loading/styles.css';
 import './styles.css';
@@ -25,6 +26,7 @@ const Play = () => {
     const [playerError, setPlayerError] = useState(false);
     const [showSlowWarning, setShowSlowWarning] = useState(false);
     const slowTimer = useRef(null);
+    const { addToContinueWatching } = useUserMovies();
 
     const provider = STREAM_PROVIDERS[providerIdx];
     const embedUrl = provider.url(id);
@@ -35,11 +37,20 @@ const Play = () => {
         setPlayerError(false);
 
         const local = MOOD_MOVIES.find(m => m.id === Number(id));
-        if (local) { setMovieTitle(local.title); return; }
+        if (local) {
+            setMovieTitle(local.title);
+            addToContinueWatching(local);
+            return;
+        }
 
         fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=en-US`)
             .then(r => r.ok ? r.json() : null)
-            .then(data => { if (data?.title) setMovieTitle(data.title); })
+            .then(data => {
+                if (data?.title) {
+                    setMovieTitle(data.title);
+                    addToContinueWatching(data);
+                }
+            })
             .catch(() => { });
     }, [id]);
 
@@ -75,18 +86,6 @@ const Play = () => {
                     <span className="play-breadcrumb__current">{movieTitle}</span>
                 </nav>
 
-                <div className="play-provider-pills">
-                    {STREAM_PROVIDERS.map((p, i) => (
-                        <button
-                            key={p.key}
-                            className={`play-provider-pill ${i === providerIdx ? 'active' : ''}`}
-                            onClick={() => setProviderIdx(i)}
-                            title={`Stream via ${p.label}`}
-                        >
-                            {p.label}
-                        </button>
-                    ))}
-                </div>
             </div>
 
             {/* ── Player ── */}
@@ -102,10 +101,7 @@ const Play = () => {
                                 </p>
                                 {showSlowWarning && (
                                     <div className="play-slow-warning">
-                                        <p>Taking too long? Try a different source.</p>
-                                        <button className="play-switch-btn" onClick={switchProvider}>
-                                            Switch to {STREAM_PROVIDERS[(providerIdx + 1) % STREAM_PROVIDERS.length].label}
-                                        </button>
+                                        <p>Taking too long? Experiencing high traffic.</p>
                                     </div>
                                 )}
                             </div>
@@ -117,11 +113,8 @@ const Play = () => {
                         <div className="play-player-error">
                             <p style={{ color: 'var(--c-text)', fontWeight: 700, fontSize: '1.1rem' }}>Stream failed to load</p>
                             <p style={{ color: 'var(--c-muted)', fontSize: '0.85rem', textAlign: 'center', maxWidth: 360 }}>
-                                {provider.label} couldn't serve this title right now.
+                                {provider.label} couldn't serve this title right now. Please try again later.
                             </p>
-                            <button className="play-switch-btn" onClick={switchProvider}>
-                                Try {STREAM_PROVIDERS[(providerIdx + 1) % STREAM_PROVIDERS.length].label} instead
-                            </button>
                         </div>
                     )}
 
