@@ -1,9 +1,11 @@
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MovieCard from '../../common/MovieCard';
 import './styles.css';
 
-const MovieRow = ({ title, movies = [], onCardClick, showBadge = false, icon = '' }) => {
+const MovieRow = ({ title, movies = [], onCardClick, showBadge = false, icon = '', id }) => {
     const rowRef = useRef(null);
+    const navigate = useNavigate();
 
     // Scroll the row left or right by one viewport width
     const scroll = (dir) => {
@@ -15,7 +17,7 @@ const MovieRow = ({ title, movies = [], onCardClick, showBadge = false, icon = '
     if (!movies.length) return null;
 
     return (
-        <section className="movie-row" aria-label={title}>
+        <section className="movie-row" aria-label={title} id={id}>
             {/* ── Row header ── */}
             <div className="row-header">
                 <h2 className="row-title">
@@ -35,7 +37,7 @@ const MovieRow = ({ title, movies = [], onCardClick, showBadge = false, icon = '
                             <polyline points="9 18 15 12 9 6" />
                         </svg>
                     </button>
-                    <span className="row-see-all">See All</span>
+                    <span className="row-see-all" onClick={() => navigate(`/browse/${id || 'trending'}`)}>See All</span>
                 </div>
             </div>
 
