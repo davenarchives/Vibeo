@@ -7,8 +7,8 @@
  * ═══════════════════════════════════════════════════════════════
  */
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // ── Reusable components ──────────────────────────────────────
 // ── Reusable components ──────────────────────────────────────
@@ -19,10 +19,12 @@ import Footer from '@/components/layout/Footer';
 
 // ── Data sources ──────────────────────────────────────────────
 import { useMovies } from '@/hooks/useMovies';
+import { useSpotlightMovies } from '@/hooks/useSpotlightMovies';
 import { MOOD_MOVIES } from '@/data/moodData';
 
 const Dashboard = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Live TMDB trending data
     const { movies: trending, loading } = useMovies();
@@ -34,15 +36,30 @@ const Dashboard = () => {
 
     const handleCardClick = (movie) => navigate(`/watch/${movie.id}`);
 
-    // Hero movies = first 5 trending results for the spotlight carousel
-    const heroMovies = trending.slice(0, 5);
+    // Personalized hero spotlight recommendations
+    const { movies: spotlightMovies, loading: spotlightLoading } = useSpotlightMovies();
+
+    // Effect for auto-scrolling to section
+    useEffect(() => {
+        if (!loading && location.hash) {
+            const id = location.hash.replace('#', '');
+            setTimeout(() => {
+                const element = document.getElementById(id);
+                if (element) {
+                    // Offset by 80px to account for the sticky header
+                    const y = element.getBoundingClientRect().top + window.scrollY - 80;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+            }, 100);
+        }
+    }, [location.hash, loading]);
 
     return (
         <div className="page-wrapper">
             <Header />
 
             <main>
-                <HeroBanner movies={heroMovies} />
+                <HeroBanner movies={spotlightMovies.length > 0 ? spotlightMovies : trending.slice(0, 5)} />
 
                 <div className="rows-container">
                     {loading ? (
@@ -53,32 +70,38 @@ const Dashboard = () => {
                     ) : (
                         <>
                             <MovieRow
+                                id="trending"
                                 title="Trending This Week"
                                 movies={trending}
                                 onCardClick={handleCardClick}
                             />
                             <MovieRow
+                                id="top-rated"
                                 title="Top Rated"
                                 movies={topRated}
                                 onCardClick={handleCardClick}
                             />
                             <MovieRow
+                                id="mood-match"
                                 title="AI Mood Matches"
                                 movies={MOOD_MOVIES}
                                 onCardClick={handleCardClick}
                                 showBadge={true}
                             />
                             <MovieRow
+                                id="action"
                                 title="Action & Adventure"
                                 movies={actionMix}
                                 onCardClick={handleCardClick}
                             />
                             <MovieRow
+                                id="drama"
                                 title="Drama"
                                 movies={dramaMix}
                                 onCardClick={handleCardClick}
                             />
                             <MovieRow
+                                id="new-release"
                                 title="New Releases"
                                 movies={[...trending].reverse().slice(0, 12)}
                                 onCardClick={handleCardClick}
