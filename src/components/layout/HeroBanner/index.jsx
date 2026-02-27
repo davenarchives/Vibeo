@@ -111,16 +111,13 @@ const HeroBanner = ({ movies = [] }) => {
 
             {/* ── CONTENT LAYER ───────────────────────────────────────── */}
             <div className="hero-content" key={activeIndex}>
-                <p className="hero-eyebrow">
-                    Spotlight&nbsp;
-                    <span className="hero-eyebrow__num">#{activeIndex + 1}</span>
-                </p>
+
 
                 <h1 className="hero-title">
                     <MovieLogo
                         tmdbId={movies[activeIndex].id}
                         title={movies[activeIndex].title}
-                        maxHeight="60px"
+                        maxHeight="200px"
                     />
                 </h1>
 

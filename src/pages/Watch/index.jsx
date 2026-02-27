@@ -14,6 +14,7 @@ import MovieRow from '@/components/layout/MovieRow';
 import MovieLogo from '@/components/common/MovieLogo';
 import Footer from '@/components/layout/Footer';
 import { useMovieDetail } from '@/hooks/useMovieDetail';
+import { useUserMovies } from '@/hooks/useUserMovies';
 import { TMDB_IMAGE_BASE, TMDB_BACKDROP_BASE } from '@/config/constants';
 import '@/components/common/Loading/styles.css';
 import './styles.css';
@@ -24,6 +25,9 @@ const Watch = () => {
 
     /* ── State ── */
     const { movie: movieMeta, similar, loading } = useMovieDetail(id);
+    const { isWatchlisted, toggleWatchlist } = useUserMovies();
+
+    const inWatchlist = movieMeta ? isWatchlisted(movieMeta.id) : false;
 
     /* ── Derived data ── */
     const backdropUrl = movieMeta?.backdrop_path ? `${TMDB_BACKDROP_BASE}${movieMeta.backdrop_path}` : null;
@@ -93,13 +97,28 @@ const Watch = () => {
                                     <p className="detail-hero__overview">{movieMeta.overview}</p>
                                 )}
 
-                                {/* Play button */}
-                                <button className="detail-play-btn" onClick={() => navigate(`/play/${id}`)}>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                        <polygon points="5 3 19 12 5 21 5 3" />
-                                    </svg>
-                                    Play
-                                </button>
+                                {/* Actions */}
+                                <div className="detail-actions">
+                                    <button className="detail-play-btn" onClick={() => navigate(`/play/${id}`)}>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                            <polygon points="5 3 19 12 5 21 5 3" />
+                                        </svg>
+                                        Play
+                                    </button>
+                                    <button
+                                        className={`detail-watchlist-btn ${inWatchlist ? 'active' : ''}`}
+                                        onClick={() => toggleWatchlist(movieMeta)}
+                                    >
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill={inWatchlist ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            {inWatchlist ? (
+                                                <path d="M20 6L9 17l-5-5" />
+                                            ) : (
+                                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                            )}
+                                        </svg>
+                                        {inWatchlist ? 'In Watchlist' : 'Add to Watchlist'}
+                                    </button>
+                                </div>
                             </div>
                         )}
 

@@ -1,0 +1,109 @@
+/* ── Browse / Category Page ── */
+
+.browse-main {
+    flex: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 2.5rem 1.5rem 4rem;
+}
+
+.browse-header {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--c-border);
+}
+
+.browse-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--c-text);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.browse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.browse-card-wrap {
+    width: 100%;
+    position: relative;
+    /* Maintain 2:3 aspect ratio roughly */
+    aspect-ratio: 2/3;
+}
+
+@media (min-width: 768px) {
+    .browse-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.75rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .browse-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 2rem;
+    }
+}
+
+.browse-empty {
+    text-align: center;
+    padding: 6rem 0;
+    color: var(--c-muted);
+}
+
+/* ── Pagination Menu ── */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    background: var(--c-surface2);
+    border: 1px solid var(--c-border);
+    color: var(--c-text);
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: var(--c-surface3);
+    border-color: var(--c-border2);
+}
+
+.pagination-btn.active {
+    background: var(--c-accent);
+    color: #fff;
+    border-color: var(--c-accent-lt);
+    box-shadow: 0 4px 12px var(--c-accent-glow);
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-btn.arrow {
+    padding: 0 12px;
+}
+
+.pagination-ellipsis {
+    color: var(--c-muted);
+    font-weight: 700;
+    padding: 0 4px;
+}

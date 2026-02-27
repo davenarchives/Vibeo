@@ -13,6 +13,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [isOnboarded, setIsOnboarded] = useState(null);
+    const [favoriteMovies, setFavoriteMovies] = useState([]);
     const [loading, setLoading] = useState(true);
 
     // Sign in with Google
@@ -39,6 +40,7 @@ export const AuthProvider = ({ children }) => {
             }, { merge: true });
 
             setIsOnboarded(true);
+            setFavoriteMovies(selectedMovies);
         } catch (error) {
             console.error("Error saving onboarding data:", error);
             throw error;
@@ -55,8 +57,10 @@ export const AuthProvider = ({ children }) => {
                     const userSnap = await getDoc(userRef);
                     if (userSnap.exists() && userSnap.data().onboarded) {
                         setIsOnboarded(true);
+                        setFavoriteMovies(userSnap.data().favoriteMovies || []);
                     } else {
                         setIsOnboarded(false);
+                        setFavoriteMovies([]);
                     }
                 } catch (error) {
                     console.error("Error fetching user data:", error);
@@ -65,6 +69,7 @@ export const AuthProvider = ({ children }) => {
             } else {
                 setCurrentUser(null);
                 setIsOnboarded(false);
+                setFavoriteMovies([]);
             }
             setLoading(false);
         });
@@ -75,10 +80,11 @@ export const AuthProvider = ({ children }) => {
     const value = useMemo(() => ({
         currentUser,
         isOnboarded,
+        favoriteMovies,
         loginWithGoogle,
         logout,
         saveOnboardingData
-    }), [currentUser, isOnboarded]);
+    }), [currentUser, isOnboarded, favoriteMovies]);
 
     return (
         <AuthContext.Provider value={value}>

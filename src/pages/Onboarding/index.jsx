@@ -46,7 +46,7 @@ const Onboarding = () => {
             <main className="onboarding-main">
                 <div className="onboarding-header">
                     <h1 className="onboarding-title">
-                        Welcome to VibeReel!
+                        Welcome to Vibeo!
                     </h1>
                     <p className="onboarding-subtitle">
                         Select exactly <strong>5 movies</strong> you love to personalize your experience.
@@ -109,7 +109,7 @@ const Onboarding = () => {
                     disabled={selectedMovies.length !== 5 || saving}
                     className={`onboarding-continue-btn ${selectedMovies.length === 5 ? 'active' : ''} ${saving ? 'saving' : ''}`}
                 >
-                    {saving ? 'Saving Preferences...' : 'Continue to VibeReel'}
+                    {saving ? 'Saving Preferences...' : 'Continue to Vibeo'}
                 </button>
             </div>
         </div>

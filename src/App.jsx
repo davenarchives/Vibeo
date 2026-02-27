@@ -18,6 +18,8 @@ import { useAuth } from '@/context/AuthContext';
 import Dashboard from '@/pages/Dashboard';
 import Watch from '@/pages/Watch';
 import Play from '@/pages/Play';
+import Profile from '@/pages/Profile';
+import Browse from '@/pages/Browse';
 import Onboarding from '@/pages/Onboarding';
 
 const App = () => {
@@ -47,6 +49,8 @@ const App = () => {
       <Route path="/" element={<Dashboard />} />
 
       <Route path="/onboarding" element={<Onboarding />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/browse/:categoryId" element={<Browse />} />
       <Route path="/watch/:id" element={<Watch />} />
 
       {/* Play page – dedicated player */}
@@ -69,7 +73,7 @@ const App = () => {
           >
             <h1 style={{ fontSize: '1.5rem', color: '#f1f0f5' }}>404 – Page Not Found</h1>
             <a href="/" style={{ color: '#a855f7', fontWeight: 600 }}>
-              ← Back to VibeReel
+              ← Back to Vibeo
             </a>
           </div>
         }

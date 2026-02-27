@@ -1,5 +1,5 @@
 /* ================================================================
-   VibeReel — Global Styles
+   Vibeo — Global Styles
    Inspired by Yorumi (anime streaming) & Mercy (movie streaming).
    Design language: deep dark backgrounds, vivid accent colours,
    horizontal carousel rows, hero spotlight banners.
@@ -33,7 +33,7 @@
   --c-blue: #3b82f6;
 }
 
-/* ── Default Theme (VibeReel - Purple) ── */
+/* ── Default Theme (Vibeo - Purple) ── */
 [data-theme="default"] {
   --c-bg: #0d0d0d;
   --c-bg2: #111116;
