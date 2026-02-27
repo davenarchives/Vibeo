@@ -3,14 +3,14 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-    // Default to 'default' (VibeReel) or read from localStorage
+    // Default to 'default' (Vibeo) or read from localStorage
     const [theme, setTheme] = useState(() => {
-        return localStorage.getItem('vibereel-theme') || 'default';
+        return localStorage.getItem('vibeo-theme') || 'default';
     });
 
     useEffect(() => {
         // Persist to localStorage
-        localStorage.setItem('vibereel-theme', theme);
+        localStorage.setItem('vibeo-theme', theme);
 
         // Apply to body for CSS selectors
         document.body.setAttribute('data-theme', theme);
@@ -20,7 +20,7 @@ export const ThemeProvider = ({ children }) => {
         theme,
         setTheme,
         availableThemes: [
-            { id: 'default', name: 'VibeReel' },
+            { id: 'default', name: 'Vibeo' },
             { id: 'ocean', name: 'Ocean' },
             { id: 'crimson', name: 'Crimson' },
             { id: 'forest', name: 'Forest' },
