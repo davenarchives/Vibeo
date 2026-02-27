@@ -20,7 +20,7 @@ import Footer from '@/components/layout/Footer';
 // ── Data sources ──────────────────────────────────────────────
 import { useMovies } from '@/hooks/useMovies';
 import { useSpotlightMovies } from '@/hooks/useSpotlightMovies';
-import { MOOD_MOVIES } from '@/data/moodData';
+import { useMoodMatchMovies } from '@/hooks/useMoodMatchMovies';
 
 const Dashboard = () => {
     const navigate = useNavigate();
@@ -36,8 +36,9 @@ const Dashboard = () => {
 
     const handleCardClick = (movie) => navigate(`/watch/${movie.id}`);
 
-    // Personalized hero spotlight recommendations
+    // Personalized recommendations
     const { movies: spotlightMovies, loading: spotlightLoading } = useSpotlightMovies();
+    const { movies: moodMatches, loading: moodLoading } = useMoodMatchMovies();
 
     // Effect for auto-scrolling to section
     useEffect(() => {
@@ -81,13 +82,15 @@ const Dashboard = () => {
                                 movies={topRated}
                                 onCardClick={handleCardClick}
                             />
-                            <MovieRow
-                                id="mood-match"
-                                title="AI Mood Matches"
-                                movies={MOOD_MOVIES}
-                                onCardClick={handleCardClick}
-                                showBadge={true}
-                            />
+                            {moodMatches && moodMatches.length > 0 && (
+                                <MovieRow
+                                    id="mood-match"
+                                    title="AI Mood Matches"
+                                    movies={moodMatches}
+                                    onCardClick={handleCardClick}
+                                    showBadge={true}
+                                />
+                            )}
                             <MovieRow
                                 id="action"
                                 title="Action & Adventure"
