@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { fetchTMDB } from '../api/tmdbClient';
-import { MOOD_MOVIES } from '../data/moodData';
+import { useAuth } from '../context/AuthContext';
 
 export const useBrowseMovies = (categoryId, page = 1) => {
+    const { favoriteMovies } = useAuth();
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(1);
@@ -42,18 +43,14 @@ export const useBrowseMovies = (categoryId, page = 1) => {
                     break;
                 case 'mood-match':
                     displayTitle = 'AI Mood Matches';
-                    // Local mock data
-                    if (isMounted) {
-                        // Mock 2 items per page for mood match if we want to show pagination
-                        const mockPerPage = 4;
-                        const total = Math.ceil(MOOD_MOVIES.length / mockPerPage);
-                        const start = (page - 1) * mockPerPage;
-                        setMovies(MOOD_MOVIES.slice(start, start + mockPerPage));
-                        setTotalPages(total);
-                        setTitle(displayTitle);
-                        setLoading(false);
+                    endpoint = '/discover/movie';
+                    if (favoriteMovies && favoriteMovies.length > 0) {
+                        const counts = {};
+                        favoriteMovies.forEach(m => (m.genre_ids || []).forEach(g => counts[g] = (counts[g] || 0) + 1));
+                        const topG = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 3).join(',');
+                        if (topG) params.with_genres = topG;
                     }
-                    return;
+                    break;
                 default:
                     endpoint = '/trending/movie/week';
                     displayTitle = 'Browse Movies';
@@ -78,7 +75,7 @@ export const useBrowseMovies = (categoryId, page = 1) => {
         return () => {
             isMounted = false;
         };
-    }, [categoryId, page]);
+    }, [categoryId, page, favoriteMovies]);
 
     return { movies, loading, totalPages, title };
 };
