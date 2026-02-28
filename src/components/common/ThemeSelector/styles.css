@@ -111,6 +111,11 @@
     box-shadow: 0 0 6px #6366f166;
 }
 
+[data-theme-preview="rose"] .theme-dot {
+    background: #e11d48;
+    box-shadow: 0 0 6px #e11d4866;
+}
+
 .theme-check {
     margin-left: auto;
     color: var(--c-accent-lt);
