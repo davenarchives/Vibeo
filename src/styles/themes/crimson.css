@@ -1,0 +1,12 @@
+[data-theme="crimson"] {
+    --c-bg: #1a0505;
+    --c-bg2: #2b0b0b;
+    --c-surface: #2b0b0b;
+    --c-surface2: #450a0a;
+    --c-surface3: #7f1d1d;
+    --c-border: rgba(239, 68, 68, 0.1);
+    --c-border2: rgba(239, 68, 68, 0.2);
+    --c-accent: #dc2626;
+    --c-accent-lt: #ef4444;
+    --c-accent-glow: rgba(239, 68, 68, 0.4);
+}

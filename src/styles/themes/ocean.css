@@ -1,0 +1,12 @@
+[data-theme="ocean"] {
+    --c-bg: #0f172a;
+    --c-bg2: #1e293b;
+    --c-surface: #1e293b;
+    --c-surface2: #334155;
+    --c-surface3: #475569;
+    --c-border: rgba(56, 189, 248, 0.1);
+    --c-border2: rgba(56, 189, 248, 0.2);
+    --c-accent: #0ea5e9;
+    --c-accent-lt: #38bdf8;
+    --c-accent-glow: rgba(56, 189, 248, 0.4);
+}

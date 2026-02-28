@@ -1,0 +1,12 @@
+[data-theme="rose"] {
+    --c-bg: #1a0f14;
+    --c-bg2: #2b1a20;
+    --c-surface: #2b1a20;
+    --c-surface2: #452a33;
+    --c-surface3: #6e4352;
+    --c-border: rgba(244, 114, 182, 0.1);
+    --c-border2: rgba(244, 114, 182, 0.2);
+    --c-accent: #e11d48;
+    --c-accent-lt: #fb7185;
+    --c-accent-glow: rgba(225, 29, 72, 0.4);
+}
