@@ -10,11 +10,15 @@
 /* ── Google Fonts (Inter) are pulled via index.html ── */
 
 /* ================================================================
-   DESIGN TOKENS
-   ================================================================ */
-/* ================================================================
    DESIGN TOKENS & THEMES
    ================================================================ */
+@import "./themes/default.css";
+@import "./themes/ocean.css";
+@import "./themes/crimson.css";
+@import "./themes/forest.css";
+@import "./themes/midnight.css";
+@import "./themes/rose.css";
+
 :root {
   /* Common */
   --c-text: #ececec;
@@ -31,76 +35,6 @@
   --c-green: #22c55e;
   --c-red: #ef4444;
   --c-blue: #3b82f6;
-}
-
-/* ── Default Theme (Vibeo - Purple) ── */
-[data-theme="default"] {
-  --c-bg: #0d0d0d;
-  --c-bg2: #111116;
-  --c-surface: #18181f;
-  --c-surface2: #1f1f28;
-  --c-surface3: #27272f;
-  --c-border: rgba(255, 255, 255, 0.07);
-  --c-border2: rgba(255, 255, 255, 0.12);
-  --c-accent: #9333ea;
-  --c-accent-lt: #a855f7;
-  --c-accent-glow: rgba(147, 51, 234, 0.4);
-}
-
-/* ── Ocean Theme (Blue/Teal) ── */
-[data-theme="ocean"] {
-  --c-bg: #0f172a;
-  --c-bg2: #1e293b;
-  --c-surface: #1e293b;
-  --c-surface2: #334155;
-  --c-surface3: #475569;
-  --c-border: rgba(56, 189, 248, 0.1);
-  --c-border2: rgba(56, 189, 248, 0.2);
-  --c-accent: #0ea5e9;
-  --c-accent-lt: #38bdf8;
-  --c-accent-glow: rgba(56, 189, 248, 0.4);
-}
-
-/* ── Crimson Theme (Red/Dark) ── */
-[data-theme="crimson"] {
-  --c-bg: #1a0505;
-  --c-bg2: #2b0b0b;
-  --c-surface: #2b0b0b;
-  --c-surface2: #450a0a;
-  --c-surface3: #7f1d1d;
-  --c-border: rgba(239, 68, 68, 0.1);
-  --c-border2: rgba(239, 68, 68, 0.2);
-  --c-accent: #dc2626;
-  --c-accent-lt: #ef4444;
-  --c-accent-glow: rgba(239, 68, 68, 0.4);
-}
-
-/* ── Forest Theme (Green) ── */
-[data-theme="forest"] {
-  --c-bg: #051a05;
-  --c-bg2: #0b2b0b;
-  --c-surface: #0b2b0b;
-  --c-surface2: #14532d;
-  --c-surface3: #166534;
-  --c-border: rgba(34, 197, 94, 0.1);
-  --c-border2: rgba(34, 197, 94, 0.2);
-  --c-accent: #16a34a;
-  --c-accent-lt: #22c55e;
-  --c-accent-glow: rgba(34, 197, 94, 0.4);
-}
-
-/* ── Midnight Theme (Clean Slate) ── */
-[data-theme="midnight"] {
-  --c-bg: #020617;
-  --c-bg2: #0f172a;
-  --c-surface: #0f172a;
-  --c-surface2: #1e293b;
-  --c-surface3: #334155;
-  --c-border: rgba(148, 163, 184, 0.08);
-  --c-border2: rgba(148, 163, 184, 0.15);
-  --c-accent: #6366f1;
-  --c-accent-lt: #818cf8;
-  --c-accent-glow: rgba(99, 102, 241, 0.4);
 }
 
 /* ================================================================
@@ -217,11 +151,6 @@ img {
   min-height: 100vh;
 }
 
-
-
-/* ================================================================
-   ROWS CONTAINER
-   ================================================================ */
 /* ================================================================
    ROWS CONTAINER
    ================================================================ */

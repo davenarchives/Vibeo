@@ -1,0 +1,12 @@
+[data-theme="forest"] {
+    --c-bg: #051a05;
+    --c-bg2: #0b2b0b;
+    --c-surface: #0b2b0b;
+    --c-surface2: #14532d;
+    --c-surface3: #166534;
+    --c-border: rgba(34, 197, 94, 0.1);
+    --c-border2: rgba(34, 197, 94, 0.2);
+    --c-accent: #16a34a;
+    --c-accent-lt: #22c55e;
+    --c-accent-glow: rgba(34, 197, 94, 0.4);
+}

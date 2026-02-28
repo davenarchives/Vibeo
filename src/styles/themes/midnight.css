@@ -1,0 +1,12 @@
+[data-theme="midnight"] {
+    --c-bg: #020617;
+    --c-bg2: #0f172a;
+    --c-surface: #0f172a;
+    --c-surface2: #1e293b;
+    --c-surface3: #334155;
+    --c-border: rgba(148, 163, 184, 0.08);
+    --c-border2: rgba(148, 163, 184, 0.15);
+    --c-accent: #6366f1;
+    --c-accent-lt: #818cf8;
+    --c-accent-glow: rgba(99, 102, 241, 0.4);
+}

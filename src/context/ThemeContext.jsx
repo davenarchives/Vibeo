@@ -20,11 +20,12 @@ export const ThemeProvider = ({ children }) => {
         theme,
         setTheme,
         availableThemes: [
-            { id: 'default', name: 'Vibeo' },
+            { id: 'default', name: 'Default' },
             { id: 'ocean', name: 'Ocean' },
             { id: 'crimson', name: 'Crimson' },
             { id: 'forest', name: 'Forest' },
             { id: 'midnight', name: 'Midnight' },
+            { id: 'rose', name: 'Rose' },
         ]
     };
 

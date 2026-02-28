@@ -1,0 +1,12 @@
+[data-theme="default"] {
+    --c-bg: #0d0d0d;
+    --c-bg2: #111116;
+    --c-surface: #18181f;
+    --c-surface2: #1f1f28;
+    --c-surface3: #27272f;
+    --c-border: rgba(255, 255, 255, 0.07);
+    --c-border2: rgba(255, 255, 255, 0.12);
+    --c-accent: #9333ea;
+    --c-accent-lt: #a855f7;
+    --c-accent-glow: rgba(147, 51, 234, 0.4);
+}
