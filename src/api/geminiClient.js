@@ -15,6 +15,16 @@ export const fetchGeminiRecommendations = async (query) => {
             throw new Error("Gemini API key is not configured");
         }
 
+        // --- CACHE CHECK ---
+        const cacheKey = `gemini_search_${query.trim().toLowerCase()}`;
+        const cachedResult = sessionStorage.getItem(cacheKey);
+
+        if (cachedResult) {
+            console.log(`[Gemini Cache Hit] Loaded results for: "${query}"`);
+            return JSON.parse(cachedResult);
+        }
+        // -------------------
+
         // We use gemini-3-flash-preview as it's the fastest text model
         const model = genAI.getGenerativeModel({ model: modelLLM });
 
@@ -42,6 +52,8 @@ export const fetchGeminiRecommendations = async (query) => {
         try {
             const titles = JSON.parse(cleanedText);
             if (Array.isArray(titles)) {
+                // Save successful result to cache
+                sessionStorage.setItem(cacheKey, JSON.stringify(titles));
                 return titles;
             }
             throw new Error("Gemini did not return an array");

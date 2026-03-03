@@ -32,6 +32,23 @@ const Search = () => {
                 return;
             }
 
+            // --- CACHE CHECK (TMDB + GEMINI FULL DATA) ---
+            const cacheKeyTMDB = `tmdb_search_${query.trim().toLowerCase()}`;
+            const cacheKeyGeminiData = `gemini_data_${query.trim().toLowerCase()}`;
+
+            const cachedTMDB = sessionStorage.getItem(cacheKeyTMDB);
+            const cachedGeminiData = sessionStorage.getItem(cacheKeyGeminiData);
+
+            if (cachedTMDB && cachedGeminiData) {
+                console.log(`[Search Cache Hit] Loaded full results for: "${query}"`);
+                setResults(JSON.parse(cachedTMDB));
+                setGeminiResults(JSON.parse(cachedGeminiData));
+                setLoading(false);
+                setGeminiLoading(false);
+                return;
+            }
+            // ---------------------------------------------
+
             setLoading(true);
             setGeminiLoading(true);
             setGeminiError(false);
@@ -47,6 +64,7 @@ const Search = () => {
                         item => item.media_type === 'movie' || item.media_type === 'tv'
                     );
                     setResults(mediaResults);
+                    sessionStorage.setItem(cacheKeyTMDB, JSON.stringify(mediaResults));
                 }
             }).catch(err => {
                 console.error("TMDB Search failed:", err);
@@ -77,6 +95,7 @@ const Search = () => {
 
                     if (isMounted) {
                         setGeminiResults(topMovies);
+                        sessionStorage.setItem(cacheKeyGeminiData, JSON.stringify(topMovies));
                     }
                 } else {
                     if (isMounted) setGeminiError(true);
