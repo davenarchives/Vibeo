@@ -1,4 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { collection, query as firestoreQuery, where, getDocs, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { stopWords } from "../utils/stopWords";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 const modelLLM = import.meta.env.VITE_GEMINI_MODEL;
@@ -9,6 +12,29 @@ if (!apiKey) {
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
+// Helper function to normalize queries for better cache matching
+export const normalizeSearchQuery = (query) => {
+    // 1. Convert to lowercase
+    let normalized = query.toLowerCase();
+
+    // 2. Remove punctuation (keep only alphanumeric and spaces)
+    normalized = normalized.replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
+
+    // 3. Remove common stop words (imported from utils)
+
+    // Split into words, filter out stop words, and sort alphabetically
+    let words = normalized.split(" ").filter(word => word.length > 0 && !stopWords.has(word));
+
+    // Remove duplicate words so "kid kid tails" becomes "kid tails"
+    words = Array.from(new Set(words));
+
+    // Sort words alphabetically so "kid 9 tails code" matches "code kid 9 tails"
+    words.sort();
+
+    // Re-join into a single string
+    return words.join(" ");
+};
+
 export const fetchGeminiRecommendations = async (query) => {
     try {
         if (!apiKey) {
@@ -16,12 +42,35 @@ export const fetchGeminiRecommendations = async (query) => {
         }
 
         // --- CACHE CHECK ---
-        const cacheKey = `gemini_search_${query.trim().toLowerCase()}`;
+        const normalizedQuery = normalizeSearchQuery(query);
+        console.log(`[Gemini Cache] Original: "${query}" -> Normalized Key: "${normalizedQuery}"`);
+
+        const cacheKey = `gemini_search_${normalizedQuery}`;
         const cachedResult = sessionStorage.getItem(cacheKey);
 
         if (cachedResult) {
-            console.log(`[Gemini Cache Hit] Loaded results for: "${query}"`);
+            console.log(`[Gemini Cache Hit - Session] Loaded results for: "${query}"`);
             return JSON.parse(cachedResult);
+        }
+
+        // --- FIRESTORE CACHE CHECK ---
+        try {
+            const cacheRef = collection(db, "gemini_search_cache");
+            const q = firestoreQuery(cacheRef, where("searchQuery", "==", normalizedQuery));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                console.log(`[Gemini Cache Hit - Firestore] Loaded results for: "${query}"`);
+                const firestoreData = querySnapshot.docs[0].data();
+                const titles = firestoreData.results;
+
+                // Save to session storage for faster access next time
+                sessionStorage.setItem(cacheKey, JSON.stringify(titles));
+                return titles;
+            }
+        } catch (dbError) {
+            console.error("Error checking Firestore cache:", dbError);
+            // Continue to call Gemini even if cache check fails
         }
         // -------------------
 
@@ -54,6 +103,28 @@ export const fetchGeminiRecommendations = async (query) => {
             if (Array.isArray(titles)) {
                 // Save successful result to cache
                 sessionStorage.setItem(cacheKey, JSON.stringify(titles));
+
+                // Save to Firestore cache
+                try {
+                    // Double-check if it was added while Gemini was generating to prevent duplicates from parallel requests
+                    const cacheRef = collection(db, "gemini_search_cache");
+                    const q = firestoreQuery(cacheRef, where("searchQuery", "==", normalizedQuery));
+                    const querySnapshot = await getDocs(q);
+
+                    if (querySnapshot.empty) {
+                        await addDoc(cacheRef, {
+                            searchQuery: normalizedQuery,
+                            results: titles,
+                            timestamp: new Date()
+                        });
+                        console.log(`[Gemini Cache Miss - Firestore] Saved results for: "${query}"`);
+                    } else {
+                        console.log(`[Gemini Cache Avoided - Firestore] Results already exist for: "${query}", skipping write.`);
+                    }
+                } catch (dbError) {
+                    console.error("Error saving to Firestore cache:", dbError);
+                }
+
                 return titles;
             }
             throw new Error("Gemini did not return an array");
