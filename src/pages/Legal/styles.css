@@ -1,0 +1,106 @@
+.legal-content {
+    max-width: 800px;
+    margin: 120px auto 60px;
+    /* Offset for sticky header */
+    padding: 2rem 1rem;
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.legal-content h1 {
+    font-size: 2.5rem;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.legal-content .last-updated {
+    font-size: 0.875rem;
+    color: var(--color-text-tertiary);
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+.legal-content section {
+    margin-bottom: 2.5rem;
+}
+
+.legal-content h2 {
+    font-size: 1.5rem;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.legal-content h3 {
+    font-size: 1.25rem;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.legal-content p {
+    margin-bottom: 1rem;
+}
+
+.legal-content ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.legal-content li {
+    margin-bottom: 0.5rem;
+}
+
+.legal-content strong {
+    color: var(--color-text-primary);
+}
+
+/* Cookie Preferences Specific */
+.cookie-settings {
+    margin-top: 2rem;
+}
+
+.cookie-option {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.cookie-option-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.cookie-option-header h3 {
+    margin: 0;
+}
+
+/* Cookie Status Badges */
+.cookie-status {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.cookie-status.active {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.cookie-status.inactive {
+    background: rgba(148, 163, 184, 0.1);
+    color: var(--c-muted, #94a3b8);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
