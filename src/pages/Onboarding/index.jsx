@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useOnboardingMovies } from '@/hooks/useOnboardingMovies';
-import Header from '@/components/layout/Header';
 import './styles.css';
 
 const Onboarding = () => {
@@ -41,8 +40,6 @@ const Onboarding = () => {
 
     return (
         <div className="onboarding-page">
-            <Header />
-
             <main className="onboarding-main">
                 <div className="onboarding-header">
                     <h1 className="onboarding-title">
