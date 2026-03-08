@@ -1,8 +1,27 @@
-/* Data & Import Section Styles */
 .data-section {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+.data-insights-container {
+    background: var(--c-surface);
+    border: 1px solid var(--c-surface3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    /* Ensure the chart fits well */
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.data-insights-container .vibe-stats {
+    width: 100%;
+    max-width: 600px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
 }
 
 .data-grid {
