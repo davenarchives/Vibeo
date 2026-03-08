@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import MovieCard from '@/components/common/MovieCard';
 import { useUserMovies } from '@/hooks/useUserMovies';
 import { useNavigate } from 'react-router-dom';
@@ -28,8 +26,6 @@ const Profile = () => {
 
     return (
         <div className="page-wrapper">
-            <Header />
-
             <main className="profile-main fade-in-up">
                 {/* Hero section */}
                 <div className="profile-hero">
@@ -207,8 +203,6 @@ const Profile = () => {
                     </section>
                 </div>
             </main>
-
-            <Footer />
         </div>
     );
 };

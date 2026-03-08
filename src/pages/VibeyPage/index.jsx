@@ -18,7 +18,6 @@ import {
     deleteChatById,
     autoTitleChat,
 } from '@/api/vibeyChatService';
-import Header from '@/components/layout/Header';
 import WatchlistDropdown from '@/components/common/WatchlistDropdown';
 import TrailerModal from '@/components/common/TrailerModal';
 import {
@@ -296,7 +295,6 @@ const VibeyPage = () => {
     if (!currentUser) {
         return (
             <div className="page-wrapper">
-                <Header />
                 <main className="vp-login-prompt fade-in-up">
                     <div className="vp-login-card">
                         <div className="vp-login-icon"><Sparkles size={40} /></div>
@@ -349,8 +347,6 @@ const VibeyPage = () => {
 
     return (
         <div className="page-wrapper">
-            <Header />
-
             <div className="vp-layout">
                 {/* ── Sidebar ── */}
                 <aside className={`vp-sidebar ${sidebarOpen ? '' : 'vp-sidebar--collapsed'}`}>
