@@ -61,6 +61,9 @@
 .settings-sidebar {
     width: 280px;
     flex-shrink: 0;
+    position: sticky;
+    top: 2rem;
+    height: max-content;
 }
 
 .settings-sidebar nav {
@@ -139,10 +142,10 @@
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.3s ease forwards;
+    animation: settingsFadeIn 0.3s ease forwards;
 }
 
-@keyframes fadeIn {
+@keyframes settingsFadeIn {
     from {
         opacity: 0;
         transform: translateY(10px);
@@ -154,30 +157,18 @@
     }
 }
 
+.mobile-sidebar {
+    display: none;
+}
+
 @media (max-width: 900px) {
     .settings-container {
         flex-direction: column;
         gap: 2rem;
     }
-
-    .settings-sidebar {
-        width: 100%;
-    }
-
-    .settings-sidebar nav {
-        flex-direction: row;
-        overflow-x: auto;
-        padding-bottom: 0.5rem;
-    }
-
-    .nav-item {
-        flex: 1;
-        justify-content: center;
-        min-width: 150px;
-    }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
     .settings-page {
         padding: 1rem 1rem 5rem 1rem;
         /* Extra bottom padding for the fixed nav */
@@ -187,24 +178,34 @@
         gap: 1.5rem;
     }
 
-    .settings-sidebar {
+    .desktop-sidebar {
+        display: none !important;
+    }
+
+    .mobile-sidebar {
+        display: block;
         position: fixed;
         bottom: 0;
+        top: auto !important;
         left: 0;
         right: 0;
         width: 100%;
         background-color: var(--c-surface);
         border-top: 1px solid var(--c-surface3);
-        z-index: 100;
+        z-index: 9999;
+        /* Extreme z-index to stay above all elements */
         padding: 0.5rem;
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+        /* Support for iOS notches */
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
     }
 
-    .settings-sidebar nav {
+    .mobile-sidebar nav {
         flex-direction: row;
         justify-content: space-around;
         padding-bottom: 0;
         gap: 0;
+        display: flex;
     }
 
     .settings-main {
@@ -235,7 +236,7 @@
 
     .nav-item .icon {
         font-size: 1.25rem;
-        margin-bottom: 2px;
+        margin-bottom: 4px;
     }
 
     .nav-item.active {
