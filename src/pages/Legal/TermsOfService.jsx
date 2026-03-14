@@ -1,12 +1,9 @@
 import React from 'react';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
 import './styles.css';
 
 const TermsOfService = () => {
     return (
         <div className="page-wrapper legal-page">
-            <Header />
             <main className="legal-content">
                 <h1>Terms of Service</h1>
                 <p className="last-updated">Last Updated: March 5, 2025</p>
@@ -173,7 +170,6 @@ const TermsOfService = () => {
                     <p>If you have any questions, concerns, or feedback about these Terms of Service, please contact the Vibeo development team through our official GitHub repository at <a href="https://github.com/ADET-AI-Assistant/Vibeo" target="_blank" rel="noopener noreferrer">github.com/ADET-AI-Assistant/Vibeo</a>.</p>
                 </section>
             </main>
-            <Footer />
         </div>
     );
 };
