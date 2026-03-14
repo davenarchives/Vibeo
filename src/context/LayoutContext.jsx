@@ -45,6 +45,11 @@ export const LayoutProvider = ({ children }) => {
         return saved !== null ? JSON.parse(saved) : true;
     });
 
+    const [dataSaverMode, setDataSaverMode] = useState(() => {
+        const saved = localStorage.getItem('vibeo-data-saver-mode');
+        return saved !== null ? JSON.parse(saved) : false;
+    });
+
     useEffect(() => {
         localStorage.setItem('vibeo-hero-source', heroSource);
     }, [heroSource]);
@@ -79,6 +84,10 @@ export const LayoutProvider = ({ children }) => {
         localStorage.setItem('vibeo-show-vibey-chat', JSON.stringify(showVibeyChat));
     }, [showVibeyChat]);
 
+    useEffect(() => {
+        localStorage.setItem('vibeo-data-saver-mode', JSON.stringify(dataSaverMode));
+    }, [dataSaverMode]);
+
     const resetLayout = () => {
         setCardSize('medium');
         setGlassLevel('subtle');
@@ -93,6 +102,7 @@ export const LayoutProvider = ({ children }) => {
             duration: false
         });
         setShowVibeyChat(true);
+        setDataSaverMode(false);
     };
 
     const value = {
@@ -112,6 +122,8 @@ export const LayoutProvider = ({ children }) => {
         setHeroVideoQuality,
         showVibeyChat,
         setShowVibeyChat,
+        dataSaverMode,
+        setDataSaverMode,
         resetLayout
     };
 
