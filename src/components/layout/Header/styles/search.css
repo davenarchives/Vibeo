@@ -71,13 +71,13 @@
     position: absolute;
     top: calc(100% + 8px);
     right: 0;
-    width: 320px;
+    width: min(340px, calc(100vw - 2rem));
     background: var(--c-bg2);
     border: 1px solid var(--c-border);
     border-radius: 14px;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
     overflow: hidden;
-    z-index: 2000;
+    z-index: var(--z-dropdown);
     animation: dropdown-in 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
