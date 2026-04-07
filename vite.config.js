@@ -26,9 +26,9 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/fanart-api/, ''),
       },
-      // Proxy local API calls to Vercel dev server
+      // Proxy local API calls to Django dev server 
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:8000',
         changeOrigin: true,
       },
     },
