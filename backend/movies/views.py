@@ -39,15 +39,14 @@ class LoginView(APIView):
             },
         ),
         responses={
-            200: openapi.Schema(
+            200: "Success", # Or whatever your 200 response is
+            # --- REPLACE THE 400 LINE WITH THIS BLOCK ---
+            400: openapi.Schema(
                 type=openapi.TYPE_OBJECT,
                 properties={
-                    'token': openapi.Schema(type=openapi.TYPE_STRING),
-                    'user_id': openapi.Schema(type=openapi.TYPE_INTEGER),
-                    'email': openapi.Schema(type=openapi.TYPE_STRING),
+                    'error': openapi.Schema(type=openapi.TYPE_STRING, description="Error message detail"),
                 }
-            ),
-            400: 'Invalid Credentials'
+            )
         }
     )
 

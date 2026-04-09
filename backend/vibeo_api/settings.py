@@ -196,5 +196,3 @@ if not DEBUG:
     X_FRAME_OPTIONS = 'DENY'
 
 LOGIN_URL = '/api-auth/login/'
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
