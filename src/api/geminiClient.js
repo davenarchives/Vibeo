@@ -6,12 +6,66 @@ import { stopWords } from "../utils/stopWords";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 const modelLLM = import.meta.env.VITE_GEMINI_MODEL;
+const groqApiKey = import.meta.env.VITE_GROQ_API_KEY || import.meta.env.GROQ_API;
+const GROQ_MODELS = [
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'mixtral-8x7b-32768',
+    'llama3-70b-8192'
+];
 
-if (!apiKey) {
-    console.warn("VITE_GEMINI_API_KEY is missing from environment variables!");
+if (!apiKey && !groqApiKey) {
+    console.warn("Both Gemini and Groq API keys are missing from environment variables!");
 }
 
-const genAI = new GoogleGenerativeAI(apiKey);
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+
+// Helper function to query Groq with rotation
+const queryGroq = async (prompt) => {
+    if (!groqApiKey) return null;
+    
+    for (const model of GROQ_MODELS) {
+        try {
+            const isLocalDev = import.meta.env.DEV;
+            const endpoint = isLocalDev ? 'https://api.groq.com/openai/v1/chat/completions' : '/api/groq';
+            const headers = { 'Content-Type': 'application/json' };
+
+            if (isLocalDev) {
+                headers['Authorization'] = `Bearer ${groqApiKey}`;
+            }
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                    model: model,
+                    messages: [{ role: 'user', content: prompt }],
+                    temperature: 0.7,
+                    max_tokens: 800,
+                }),
+            });
+
+            if (!response.ok) {
+                if (response.status === 400 || response.status === 429) {
+                    console.warn(`[GeminiClient] Groq model ${model} failed (${response.status}), trying next fallback...`);
+                    continue;
+                }
+                return null;
+            }
+            
+            const data = await response.json();
+            const content = data.choices?.[0]?.message?.content;
+            if (content) {
+                console.log(`[GeminiClient] Successfully used Groq model: ${model}`);
+                return content;
+            }
+        } catch (err) {
+            console.error(`[GeminiClient] Groq error with ${model}:`, err.message);
+            // continue
+        }
+    }
+    return null;
+};
 
 // Helper function to normalize queries for better cache matching
 export const normalizeSearchQuery = (query) => {
@@ -38,19 +92,15 @@ export const normalizeSearchQuery = (query) => {
 
 export const fetchGeminiRecommendations = async (query) => {
     try {
-        if (!apiKey) {
-            throw new Error("Gemini API key is not configured");
-        }
-
         // --- CACHE CHECK ---
         const normalizedQuery = normalizeSearchQuery(query);
-        console.log(`[Gemini Cache] Original: "${query}" -> Normalized Key: "${normalizedQuery}"`);
+        console.log(`[AI Cache Search] Original: "${query}" -> Normalized Key: "${normalizedQuery}"`);
 
         const cacheKey = `gemini_search_${normalizedQuery}`;
         const cachedResult = sessionStorage.getItem(cacheKey);
 
         if (cachedResult) {
-            console.log(`[Gemini Cache Hit - Session] Loaded results for: "${query}"`);
+            console.log(`[AI Cache Hit - Session] Loaded results for: "${query}"`);
             return JSON.parse(cachedResult);
         }
 
@@ -61,7 +111,7 @@ export const fetchGeminiRecommendations = async (query) => {
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-                console.log(`[Gemini Cache Hit - Firestore] Loaded results for: "${query}"`);
+                console.log(`[AI Cache Hit - Firestore] Loaded results for: "${query}"`);
                 const firestoreData = querySnapshot.docs[0].data();
                 const titles = firestoreData.results;
 
@@ -71,12 +121,8 @@ export const fetchGeminiRecommendations = async (query) => {
             }
         } catch (dbError) {
             console.error("Error checking Firestore cache:", dbError);
-            // Continue to call Gemini even if cache check fails
         }
         // -------------------
-
-        // We use gemini-3-flash-preview as it's the fastest text model
-        const model = genAI.getGenerativeModel({ model: modelLLM });
 
         const prompt = `
             You are a movie recommendation engine for a streaming app. 
@@ -93,8 +139,25 @@ export const fetchGeminiRecommendations = async (query) => {
             ["Title 1", "Title 2", "Title 3"]
         `;
 
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
+        let responseText = null;
+
+        // Try Groq first if available (as requested by user)
+        if (groqApiKey) {
+            console.log("[AI] Trying Groq for recommendations...");
+            responseText = await queryGroq(prompt);
+        }
+
+        // Fallback to Gemini if Groq failed or not available
+        if (!responseText && apiKey && genAI) {
+            console.log("[AI] Trying Gemini for recommendations...");
+            const model = genAI.getGenerativeModel({ model: modelLLM });
+            const result = await model.generateContent(prompt);
+            responseText = result.response.text();
+        }
+
+        if (!responseText) {
+            throw new Error("No AI provider available or both failed");
+        }
 
         // Try to parse the response as JSON. We remove common markdown code block syntaxes just in case.
         const cleanedText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
@@ -107,7 +170,6 @@ export const fetchGeminiRecommendations = async (query) => {
 
                 // Save to Firestore cache
                 try {
-                    // Double-check if it was added while Gemini was generating to prevent duplicates from parallel requests
                     const cacheRef = collection(db, "gemini_search_cache");
                     const q = firestoreQuery(cacheRef, where("searchQuery", "==", normalizedQuery));
                     const querySnapshot = await getDocs(q);
@@ -118,9 +180,7 @@ export const fetchGeminiRecommendations = async (query) => {
                             results: titles,
                             timestamp: new Date()
                         });
-                        console.log(`[Gemini Cache Miss - Firestore] Saved results for: "${query}"`);
-                    } else {
-                        console.log(`[Gemini Cache Avoided - Firestore] Results already exist for: "${query}", skipping write.`);
+                        console.log(`[AI Cache Miss - Firestore] Saved results for: "${query}"`);
                     }
                 } catch (dbError) {
                     console.error("Error saving to Firestore cache:", dbError);
@@ -128,25 +188,20 @@ export const fetchGeminiRecommendations = async (query) => {
 
                 return titles;
             }
-            throw new Error("Gemini did not return an array");
+            throw new Error("AI did not return an array");
         } catch (parseError) {
-            console.error("Failed to parse Gemini response:", cleanedText);
+            console.error("Failed to parse AI response:", cleanedText);
             throw new Error("Invalid format received from AI");
         }
 
     } catch (error) {
-        console.error("Gemini API Error:", error);
+        console.error("AI API Error:", error);
         return []; // Return an empty array on failure so it doesn't break the app
     }
 };
 
 export const analyzeTastePreferences = async (watchedMovies, lovedMovies) => {
     try {
-        if (!apiKey) {
-            throw new Error("Gemini API key is not configured");
-        }
-        const model = genAI.getGenerativeModel({ model: modelLLM });
-
         const watchedTitles = watchedMovies.map(m => m.title || m.name).join(", ");
         const lovedTitles = lovedMovies.map(m => m.title || m.name).join(", ");
 
@@ -163,8 +218,25 @@ export const analyzeTastePreferences = async (watchedMovies, lovedMovies) => {
             ["Title 1", "Title 2", "Title 3", "Title 4", "Title 5", "Title 6", "Title 7", "Title 8"]
         `;
 
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
+        let responseText = null;
+
+        // Try Groq first
+        if (groqApiKey) {
+            console.log("[AI] Trying Groq for taste analysis...");
+            responseText = await queryGroq(prompt);
+        }
+
+        // Fallback to Gemini
+        if (!responseText && apiKey && genAI) {
+            console.log("[AI] Trying Gemini for taste analysis...");
+            const model = genAI.getGenerativeModel({ model: modelLLM });
+            const result = await model.generateContent(prompt);
+            responseText = result.response.text();
+        }
+
+        if (!responseText) {
+            throw new Error("No AI provider available or both failed");
+        }
 
         const cleanedText = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
 
@@ -173,13 +245,13 @@ export const analyzeTastePreferences = async (watchedMovies, lovedMovies) => {
             if (Array.isArray(titles)) {
                 return titles;
             }
-            throw new Error("Gemini did not return an array");
+            throw new Error("AI did not return an array");
         } catch (parseError) {
-            console.error("Failed to parse Gemini response:", cleanedText);
+            console.error("Failed to parse AI response:", cleanedText);
             throw new Error("Invalid format received from AI");
         }
     } catch (error) {
-        console.warn("Gemini API Error or Quota Exceeded. Falling back to TMDB Smart Algorithm...", error);
+        console.warn("AI API Error. Falling back to TMDB Smart Algorithm...", error);
 
         try {
             // --- TMDB FALLBACK ALGORITHM ---
@@ -223,6 +295,7 @@ export const analyzeTastePreferences = async (watchedMovies, lovedMovies) => {
         return [];
     }
 };
+
 
 // ==========================================
 // USER SEARCH HISTORY API
