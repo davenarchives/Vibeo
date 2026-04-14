@@ -5,32 +5,41 @@ import './styles.css';
 const MovieLogo = ({ tmdbId, title, type = 'movie', className = '', maxHeight = '90px', style = {} }) => {
     const { logoUrl, loading } = useFanartLogo(tmdbId, type);
     const [imgError, setImgError] = useState(false);
+    const [isReady, setIsReady] = useState(false);
 
-    // Show text title while loading, if no logo found, or if image fails
-    if (loading || !logoUrl || imgError) {
-        return (
-            <span className={`movie-logo-text ${className}`} style={style}>
-                {title}
-            </span>
-        );
-    }
+    // If no logo found or image failed, just show the text forever
+    const showFallback = !logoUrl || imgError;
 
     return (
-        <img
-            src={logoUrl}
-            alt={`${title} logo`}
-            className={`movie-logo-img ${className}`}
-            onError={() => setImgError(true)}
-            loading="lazy"
-            style={{
-                maxHeight,
-                width: 'auto',
-                maxWidth: '100%',
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.6))',
-                ...style,
-            }}
-        />
+        <div className={`movie-logo-container ${className}`} style={{ ...style }}>
+            {/* 1. The text title is the 'anchor' that defines the component's size.
+                  We keep it in the flow (relative) to prevent container collapse. */}
+            <span 
+                className={`movie-logo-text ${isReady ? 'movie-logo-text--hidden' : ''}`}
+                style={{ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' }}
+            >
+                {title}
+            </span>
+
+            {/* 2. The Logo Image absolute-positions itself over the text. */}
+            {logoUrl && !imgError && (
+                <img
+                    src={logoUrl}
+                    alt={`${title} logo`}
+                    className={`movie-logo-img ${isReady ? 'movie-logo-img--ready' : ''}`}
+                    onLoad={() => setIsReady(true)}
+                    onError={() => setImgError(true)}
+                    loading="eager"
+                    style={{
+                        maxHeight: maxHeight || '100%',
+                        width: 'auto',
+                        maxWidth: '100%',
+                        objectFit: 'contain',
+                        filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.6))',
+                    }}
+                />
+            )}
+        </div>
     );
 };
 
