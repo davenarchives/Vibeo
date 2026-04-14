@@ -15,8 +15,13 @@ import { normalizeSearchQuery } from "./geminiClient";
 const LOCAL_GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || import.meta.env.GROQ_API;
 const LOCAL_HF_API_KEY = import.meta.env.VITE_HF_API_KEY || import.meta.env.HUGGING_FACE_API;
 
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
-const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.3';
+const GROQ_MODELS = [
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant',
+    'mixtral-8x7b-32768',
+    'llama3-70b-8192'
+];
+const HF_MODEL = 'meta-llama/Llama-3.1-8B-Instruct';
 
 /**
  * Shared prompt that instructs the model to return movie titles as JSON.
@@ -78,48 +83,58 @@ const setCache = (normalizedQuery, data) => {
 
 // ── Groq Provider ─────────────────────────────────────────────
 const queryGroq = async (query) => {
-    try {
-        // If we are running Vite locally, skip the Vercel proxy and call Groq directly
-        const isLocalDev = import.meta.env.DEV;
-        const endpoint = isLocalDev ? 'https://api.groq.com/openai/v1/chat/completions' : '/api/groq';
-        const headers = { 'Content-Type': 'application/json' };
+    // try multiple models in case of decommissioning
+    for (const model of GROQ_MODELS) {
+        try {
+            // If we are running Vite locally, skip the Vercel proxy and call Groq directly
+            const isLocalDev = import.meta.env.DEV;
+            const endpoint = isLocalDev ? 'https://api.groq.com/openai/v1/chat/completions' : '/api/groq';
+            const headers = { 'Content-Type': 'application/json' };
 
-        if (isLocalDev) {
-            if (!LOCAL_GROQ_API_KEY) {
-                console.warn('[SmartSearch] Local Groq API key not configured, skipping.');
+            if (isLocalDev) {
+                if (!LOCAL_GROQ_API_KEY) {
+                    console.warn('[SmartSearch] Local Groq API key not configured, skipping.');
+                    return null;
+                }
+                headers['Authorization'] = `Bearer ${LOCAL_GROQ_API_KEY}`;
+            }
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                    model: model,
+                    messages: [
+                        { role: 'user', content: buildPrompt(query) }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 500,
+                }),
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                // If decommissioned or rate limit, try next model
+                if (response.status === 400 || response.status === 429) {
+                    console.warn(`[SmartSearch] Groq ${model} failed (${response.status}), trying next fallback...`);
+                    continue;
+                }
+                console.warn(`[SmartSearch] Groq failed (${response.status}):`, errText);
                 return null;
             }
-            headers['Authorization'] = `Bearer ${LOCAL_GROQ_API_KEY}`;
+
+            const data = await response.json();
+            const content = data.choices?.[0]?.message?.content;
+            if (content) {
+                console.log(`[SmartSearch] Successfully used Groq model: ${model}`);
+                return parseAIResponse(content);
+            }
+        } catch (err) {
+            console.warn(`[SmartSearch] Groq error with ${model}:`, err.message);
+            // continue loop
         }
-
-        const response = await fetch(endpoint, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({
-                model: GROQ_MODEL,
-                messages: [
-                    { role: 'user', content: buildPrompt(query) }
-                ],
-                temperature: 0.7,
-                max_tokens: 500,
-            }),
-        });
-
-        if (!response.ok) {
-            const errText = await response.text();
-            console.warn(`[SmartSearch] Groq failed (${response.status}):`, errText);
-            return null;
-        }
-
-        const data = await response.json();
-        const content = data.choices?.[0]?.message?.content;
-        if (!content) return null;
-
-        return parseAIResponse(content);
-    } catch (err) {
-        console.warn('[SmartSearch] Groq error:', err.message);
-        return null;
     }
+    return null;
 };
 
 // ── HuggingFace Provider ──────────────────────────────────────
@@ -127,7 +142,7 @@ const queryHuggingFace = async (query) => {
     try {
         // If we are running Vite locally, skip the Vercel proxy and call HF directly
         const isLocalDev = import.meta.env.DEV;
-        const endpoint = isLocalDev ? `https://api-inference.huggingface.co/models/${HF_MODEL}/v1/chat/completions` : '/api/huggingface';
+        const endpoint = isLocalDev ? `https://router.huggingface.co/v1/chat/completions` : '/api/huggingface';
         const headers = { 'Content-Type': 'application/json' };
 
         if (isLocalDev) {

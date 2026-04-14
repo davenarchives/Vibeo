@@ -32,16 +32,9 @@ const ApiTesterCard = ({ title, method, endpoint, description, demoBody, apiCall
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
         }}>
             {/* Header */}
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '20px 24px',
-                borderBottom: '1px solid var(--c-surface2)',
-                background: 'rgba(255,255,255,0.02)'
-            }}>
+            <div className="api-card-header">
                 <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
                         <span style={{
                             background: method === 'GET' ? 'rgba(137, 180, 250, 0.2)' : 'rgba(166, 227, 161, 0.2)',
                             color: method === 'GET' ? '#89b4fa' : '#a6e3a1',
@@ -51,13 +44,22 @@ const ApiTesterCard = ({ title, method, endpoint, description, demoBody, apiCall
                             fontWeight: 700,
                             letterSpacing: '1px'
                         }}>{method}</span>
-                        <code style={{ color: 'var(--c-text)', fontSize: '1rem', fontWeight: 600 }}>{endpoint}</code>
+                        <code style={{ 
+                            color: 'var(--c-text)', 
+                            fontSize: '0.9rem', 
+                            fontWeight: 600, 
+                            wordBreak: 'break-all',
+                            background: 'rgba(255,255,255,0.05)',
+                            padding: '2px 8px',
+                            borderRadius: '6px'
+                        }}>{endpoint}</code>
                     </div>
                     <p style={{ margin: 0, color: 'var(--c-text2)', fontSize: '0.9rem' }}>{title}</p>
                 </div>
                 <button 
                     onClick={handleTest}
                     disabled={loading}
+                    className="api-card-test-btn"
                     style={{
                         background: 'var(--c-text)',
                         color: 'var(--c-bg)',
@@ -70,10 +72,9 @@ const ApiTesterCard = ({ title, method, endpoint, description, demoBody, apiCall
                         alignItems: 'center',
                         gap: '8px',
                         transition: 'transform 0.2s',
-                        opacity: loading ? 0.7 : 1
+                        opacity: loading ? 0.7 : 1,
+                        whiteSpace: 'nowrap'
                     }}
-                    onMouseEnter={e => !loading && (e.currentTarget.style.transform = 'scale(1.02)')}
-                    onMouseLeave={e => !loading && (e.currentTarget.style.transform = 'scale(1)')}
                 >
                     {loading ? <Activity size={18} className="animate-spin" /> : <Send size={18} />}
                     {loading ? 'Sending...' : 'Test Endpoint'}
@@ -140,9 +141,7 @@ const AuthStatusCard = () => {
             marginBottom: '40px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
         }}>
-            <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '20px 24px', borderBottom: '1px solid var(--c-surface2)',
+            <div className="api-card-header" style={{
                 background: currentUser ? 'rgba(166, 227, 161, 0.05)' : 'rgba(243, 139, 168, 0.05)'
             }}>
                 <div>
@@ -157,7 +156,7 @@ const AuthStatusCard = () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: currentUser ? '#a6e3a1' : '#f38ba8', fontWeight: 700 }}>
                     {currentUser ? <UserCheck size={20} /> : <ShieldOff size={20} />}
-                    {currentUser ? 'AUTHENTICATED' : 'ANONYMOUS'}
+                    <span style={{ whiteSpace: 'nowrap' }}>{currentUser ? 'AUTHENTICATED' : 'ANONYMOUS'}</span>
                 </div>
             </div>
             
@@ -215,63 +214,90 @@ const ApiDocsSection = () => {
         };
 
         try {
+            // Priority 1: Cloud/Vercel Proxy
             const res = await fetch('/api/groq', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
-            const contentType = res.headers.get("content-type");
-            if (res.ok && contentType && contentType.includes("application/json")) {
-                return await res.json();
-            }
-            throw new Error("Local proxy not available");
-        } catch (err) {
-            const key = import.meta.env.VITE_GROQ_API_KEY;
-            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            if (res.ok) return await res.json();
+            
+            // Priority 2: Local Development Proxy (Vite server-side)
+            const proxyRes = await fetch(`/api/groq-inference/v1/chat/completions`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+                headers: { 
+                    'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+                    'Content-Type': 'application/json' 
+                },
                 body: JSON.stringify(body)
             });
-            if (!res.ok) throw new Error("Direct Groq fetch failed");
-            const data = await res.json();
-            return { _dev_note: "Response served via direct API fallback", ...data };
+            
+            if (proxyRes.ok) return await proxyRes.json();
+            
+            // If we got here, the proxy returned an error (e.g. 401, 429)
+            const errorData = await proxyRes.json().catch(() => ({}));
+            throw new Error(errorData.error?.message || `Groq API Error: ${proxyRes.status}`);
+            
+        } catch (err) {
+            // Direct fallback as last resort (Groq supports CORS)
+            if (err.message.includes('not available') || err.message.includes('Failed to fetch')) {
+                 const key = import.meta.env.VITE_GROQ_API_KEY;
+                 const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                     method: 'POST',
+                     headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+                     body: JSON.stringify(body)
+                 });
+                 if (!res.ok) throw new Error("Connection failed");
+                 return await res.json();
+            }
+            throw err;
         }
     };
 
     // Handler for HuggingFace serverless with robust local dev fallback
     const fetchHF = async () => {
         const body = {
-            model: "mistralai/Mistral-7B-Instruct-v0.3",
+            model: "meta-llama/Llama-3.1-8B-Instruct",
             messages: [{ role: "user", content: "Tell me a short 1 sentence movie quote." }]
         };
 
         try {
+            // Priority 1: Cloud/Vercel Proxy
             const res = await fetch('/api/huggingface', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             });
-            const contentType = res.headers.get("content-type");
-            if (res.ok && contentType && contentType.includes("application/json")) {
-                return await res.json();
-            }
-            throw new Error("Local proxy not available");
-        } catch (err) {
-            const key = import.meta.env.VITE_HF_API_KEY || import.meta.env.HUGGING_FACE_API;
-            const res = await fetch(`https://api-inference.huggingface.co/models/${body.model}/v1/chat/completions`, {
+            if (res.ok) return await res.json();
+
+            // Priority 2: Local Development Proxy (Vite server-side)
+            const proxyRes = await fetch(`/api/hf-inference/chat/completions`, {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+                headers: { 
+                    'Authorization': `Bearer ${import.meta.env.VITE_HF_API_KEY}`,
+                    'Content-Type': 'application/json' 
+                },
                 body: JSON.stringify(body)
             });
-            if (!res.ok) throw new Error("Direct HF fetch failed");
-            const data = await res.json();
-            return { _dev_note: "Response served via direct API fallback", ...data };
+
+            if (proxyRes.ok) return await proxyRes.json();
+            
+            // Handle specific HF errors (like 503 loading, 401 invalid key, etc.)
+            const errorData = await proxyRes.json().catch(() => ({}));
+            const errMsg = typeof errorData.error === 'object'
+                ? JSON.stringify(errorData.error)
+                : (errorData.error || errorData.message || `HF Error: ${proxyRes.status}`);
+            throw new Error(errMsg);
+
+        } catch (err) {
+            // NOTE: We do NOT fallback to direct fetch here because HF denies browser CORS
+            throw err;
         }
     };
 
     // Handler for Django Leaderboard
     const fetchLeaderboard = async () => {
-        const res = await fetch('/api/leaderboard/');
+        const res = await fetch('/api/v1/leaderboard/');
         if (!res.ok) throw new Error("Leaderboard fetch failed");
         return await res.json();
     };
@@ -286,7 +312,7 @@ const ApiDocsSection = () => {
             current_streak: 3,
             highest_streak: 5
         };
-        const res = await fetch('/api/sync-stats/', {
+        const res = await fetch('/api/v1/sync-stats/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
@@ -297,12 +323,22 @@ const ApiDocsSection = () => {
 
     return (
         <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
-                <div>
-                    <h2 style={{ fontSize: '2.5rem', color: 'var(--c-text)', marginBottom: '8px', fontWeight: 800 }}>Live Endpoints</h2>
-                    <p style={{ color: 'var(--c-text2)', fontSize: '1.1rem', margin: 0 }}>Interactive playground mirroring Postman functionality.</p>
+            <div className="docs-header-wrapper">
+                <div style={{ marginBottom: '24px' }}>
+                    <h2 className="docs-heading">Live Endpoints</h2>
+                    <p className="docs-subheading" style={{ marginBottom: '16px' }}>Interactive playground mirroring Postman functionality.</p>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(249, 226, 175, 0.1)', color: '#f9e2af', padding: '10px 16px', borderRadius: '12px' }}>
+                <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '8px', 
+                    background: 'rgba(249, 226, 175, 0.1)', 
+                    color: '#f9e2af', 
+                    padding: '10px 16px', 
+                    borderRadius: '12px',
+                    width: 'fit-content',
+                    marginBottom: '40px'
+                }}>
                     <Key size={18} />
                     <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>API Keys Loaded securely</span>
                 </div>
@@ -313,7 +349,7 @@ const ApiDocsSection = () => {
             <ApiTesterCard 
                 title="Global Leaderboard — SQL Aggregate"
                 method="GET"
-                endpoint="/api/leaderboard"
+                endpoint="/api/v1/leaderboard"
                 description="Fetches the top 50 users ranked by watch time or streaks. This hits the Django backend which queries the Neon PostgreSQL database."
                 apiCallHandler={fetchLeaderboard}
             />
@@ -321,7 +357,7 @@ const ApiDocsSection = () => {
             <ApiTesterCard 
                 title="User Stats Sync — Hybrid Bridge"
                 method="POST"
-                endpoint="/api/sync-stats"
+                endpoint="/api/v1/sync-stats"
                 description="Synchronizes local Firebase state to the relational database. This is used to build the global leaderboard without querying Firestore directly for every ranking."
                 demoBody={JSON.stringify({
                     firebase_uid: "Pm1WLcJLZ3aHkXO53BefELh3YAB3",
@@ -365,9 +401,9 @@ const ApiDocsSection = () => {
                 title="Vercel Serverless Function — HuggingFace Integration"
                 method="POST"
                 endpoint="/api/huggingface"
-                description="Backup AI provider. If Groq fails, this proxy sends the chat payload to HuggingFace Inference Endpoints running Mistral 7B."
+                description="Backup AI provider. If Groq fails, this proxy sends the chat payload to HuggingFace Inference Providers running Llama 3.1 8B."
                 demoBody={JSON.stringify({
-                    model: "mistralai/Mistral-7B-Instruct-v0.3",
+                    model: "meta-llama/Llama-3.1-8B-Instruct",
                     messages: [{ role: "user", content: "Tell me a short 1 sentence movie quote." }]
                 }, null, 2)}
                 apiCallHandler={fetchHF}

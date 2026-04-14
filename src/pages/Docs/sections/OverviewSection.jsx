@@ -60,23 +60,15 @@ const OverviewSection = () => {
     return (
         <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-                <span style={{
+                <h1 className="docs-heading" style={{
                     background: 'linear-gradient(135deg, var(--c-accent), #8b5cf6)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    fontSize: '3rem',
-                    fontWeight: 800,
-                    letterSpacing: '-1px'
-                }}>Project Overview</span>
+                    margin: 0
+                }}>Project Overview</h1>
             </div>
 
-            <p style={{
-                color: 'var(--c-text2)',
-                fontSize: '1.2rem',
-                lineHeight: '1.7',
-                marginBottom: '40px',
-                maxWidth: '800px'
-            }}>
+            <p className="docs-subheading">
                 Vibeo is a modern media discovery platform designed with premium UI patterns.
                 This documentation hub proves the correct implementation of the required system architecture.
             </p>
@@ -92,17 +84,18 @@ const OverviewSection = () => {
 
             {/* Metrics Bar */}
             <div style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: 'var(--c-bg)', borderRadius: '16px', border: '1px solid var(--c-surface2)',
-                marginBottom: '48px', overflow: 'hidden'
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                background: 'var(--c-bg)',
+                borderRadius: '16px',
+                border: '1px solid var(--c-surface2)',
+                marginBottom: '48px',
+                overflow: 'hidden'
             }}>
-                <MetricBlock icon={Layers} value="15+" label="Custom Components" />
-                <div style={{ width: '1px', background: 'var(--c-surface2)', height: '60px' }} />
+                <MetricBlock icon={Layers} value="15+" label="Components" />
                 <MetricBlock icon={Activity} value="5" label="External APIs" />
-                <div style={{ width: '1px', background: 'var(--c-surface2)', height: '60px' }} />
-                <MetricBlock icon={Database} value="3" label="NoSQL Collections" />
-                <div style={{ width: '1px', background: 'var(--c-surface2)', height: '60px' }} />
-                <MetricBlock icon={Terminal} value="2" label="Serverless Functions" />
+                <MetricBlock icon={Database} value="3" label="NoSQL" />
+                <MetricBlock icon={Terminal} value="2" label="Serverless" />
             </div>
 
             <h3 style={{
@@ -113,12 +106,12 @@ const OverviewSection = () => {
                 paddingBottom: '12px'
             }}>Modern Technical Equivalency</h3>
 
-            <p style={{ color: 'var(--c-text2)', marginBottom: '32px' }}>
+            <p style={{ color: 'var(--c-text2)', marginBottom: '32px', lineHeight: '1.6' }}>
                 Instead of older legacy architectures (like localhost Django with SQL), Vibeo uses a modern
                 <strong> Serverless Edge Architecture</strong>. Below is the mapping of the project requirements to our implementation:
             </p>
 
-            <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))' }}>
+            <div style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
                 <ChecklistItem
                     title="1. Server & Environment Setup"
                     status={true}

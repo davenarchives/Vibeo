@@ -282,8 +282,9 @@ const App = () => {
           </Routes>
         </Suspense>
 
-        {/* Avoid rendering footer on app-like views */}
-        {!['/onboarding', '/profile', '/settings'].includes(location.pathname) && <Footer />}
+        {/* Avoid rendering footer on app-like views or full-screen discovery pages */}
+        {!['/onboarding', '/profile', '/settings', '/vibey'].some(p => location.pathname === p) && 
+         !location.pathname.startsWith('/discover') && <Footer />}
 
         {/* Vibey AI Chatbot — global floating overlay (Hidden on app-like views) */}
         {showVibeyChat && !['/settings', '/onboarding', '/profile'].includes(location.pathname) && <VibeyChat />}

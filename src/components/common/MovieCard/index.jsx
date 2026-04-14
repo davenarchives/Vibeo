@@ -58,6 +58,12 @@ const MovieCard = React.memo(({ movie, onClick, animationDelay = '0ms', showMatc
         }
     };
 
+    const handleInfoClick = (e) => {
+        e.stopPropagation();
+        // Info button ALWAYS goes to the details page, even if card click is overridden
+        navigate(`/watch/${movie.id}?type=${mediaType}`);
+    };
+
     return (
         <article
             className={`mc ${isHovered ? 'mc--hovered' : ''} fade-in-up`}
@@ -137,7 +143,7 @@ const MovieCard = React.memo(({ movie, onClick, animationDelay = '0ms', showMatc
 
                 <div className="mc__details-bottom">
                     <div className="mc__action-btns">
-                        <button className="mc__btn mc__btn--secondary" onClick={handleDetailsClick}>
+                        <button className="mc__btn mc__btn--secondary" onClick={handleInfoClick}>
                             <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
                                 <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
                                 <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" />
@@ -154,7 +160,7 @@ const MovieCard = React.memo(({ movie, onClick, animationDelay = '0ms', showMatc
                 </div>
             </div>
 
-            <div className={`mc__info ${showDetails ? 'mc__info--dimmed' : ''}`}>
+            <div className="mc__info">
                 <p className="mc__title">{displayTitle}</p>
                 {year && <span className="mc__year">{year}</span>}
             </div>

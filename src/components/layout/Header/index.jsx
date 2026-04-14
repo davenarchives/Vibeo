@@ -5,7 +5,6 @@ import { fetchTMDB } from '@/api/tmdbClient';
 import { getUserSearchHistory, saveUserSearchHistory, removeUserSearchHistory } from '@/api/geminiClient';
 import { TMDB_IMAGE_BASE } from '@/config/constants';
 import { Compass, Sparkles, MessageSquare, Heart, Trophy } from 'lucide-react';
-import StreakCounter from '@/components/common/StreakCounter';
 import './styles.css';
 
 const PREVIEW_COUNT = 5;
@@ -193,7 +192,6 @@ const Header = () => {
         <div className={className}>
             {currentUser ? (
                 <div className="topbar__user-container">
-                    {!isMobile && <StreakCounter className="header-streak" />}
                     <img
                         src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.email}&background=random`}
                         alt={currentUser.displayName || 'User Profile'}
@@ -251,7 +249,6 @@ const Header = () => {
                     {isMobile && (
                         <div className="topbar__mobile-user-hero">
                             <div className="mobile-user-hero__info">
-                                <StreakCounter className="mobile-streak" />
                                 <div className="mobile-user-details">
                                     <div className="mobile-dropdown-name">{currentUser.displayName || 'User'}</div>
                                     <div className="mobile-dropdown-email">{currentUser.email}</div>

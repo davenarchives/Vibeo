@@ -39,13 +39,17 @@ const EditProfileModal = ({ isOpen, onClose }) => {
     const [username, setUsername] = useState(originalName);
     const [avatarStyle, setAvatarStyle] = useState(defaultStyle);
     const [avatarSeed, setAvatarSeed] = useState(defaultSeed);
+    const [useGooglePhoto, setUseGooglePhoto] = useState(!isDicebear && !!currentUser?.providerData?.find(p => p.photoURL)?.photoURL);
     const [isSaving, setIsSaving] = useState(false);
 
     if (!isOpen) return null;
 
-    const currentPreviewUrl = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${encodeURIComponent(avatarSeed)}`;
+    const googlePhoto = currentUser?.providerData?.find(p => p.photoURL)?.photoURL;
+    const dicebearUrl = `https://api.dicebear.com/7.x/${avatarStyle}/svg?seed=${encodeURIComponent(avatarSeed)}`;
+    const currentPreviewUrl = useGooglePhoto && googlePhoto ? googlePhoto : dicebearUrl;
 
     const handleRandomize = () => {
+        setUseGooglePhoto(false);
         const randomSeed = Math.random().toString(36).substring(2, 7);
         setAvatarSeed(randomSeed);
     };
@@ -87,7 +91,10 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                         <div className="avatar-controls-row">
                             <select 
                                 value={avatarStyle} 
-                                onChange={(e) => setAvatarStyle(e.target.value)}
+                                onChange={(e) => {
+                                    setAvatarStyle(e.target.value);
+                                    setUseGooglePhoto(false);
+                                }}
                                 className="styled-select"
                             >
                                 {DICEBEAR_STYLES.map(s => (
@@ -97,6 +104,17 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                             <button type="button" className="dice-btn" onClick={handleRandomize} title="Randomize Avatar">
                                 <Dices size={18} />
                             </button>
+                            
+                            {googlePhoto && (
+                                <button 
+                                    type="button" 
+                                    className={`google-reset-btn ${useGooglePhoto ? 'active' : ''}`}
+                                    onClick={() => setUseGooglePhoto(true)}
+                                    title="Use Google Profile Photo"
+                                >
+                                    <img src={googlePhoto} alt="Google" className="mini-google-icon" />
+                                </button>
+                            )}
                         </div>
                     </div>
 

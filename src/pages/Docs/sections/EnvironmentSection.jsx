@@ -40,8 +40,8 @@ const EnvironmentSection = () => {
     return (
         <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
             <div style={{ marginBottom: '40px' }}>
-                <h2 style={{ fontSize: '2.5rem', color: 'var(--c-text)', marginBottom: '16px', fontWeight: 800 }}>Environment Health</h2>
-                <p style={{ color: 'var(--c-text2)', fontSize: '1.1rem', maxWidth: '800px', lineHeight: '1.6' }}>
+                <h2 className="docs-heading">Environment Health</h2>
+                <p className="docs-subheading">
                     Live validation of the local environment (`.env` file or Vercel config). 
                     Actual API keys are intentionally hidden for security. This proves the system environment is properly bootstrapped.
                 </p>
@@ -93,22 +93,20 @@ const EnvironmentSection = () => {
                 </div>
                 
                 {/* Footer Status */}
-                <div style={{
+                <div className="api-card-header" style={{
                     padding: '20px',
                     background: '#11111b',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '12px',
                     color: '#a6e3a1',
                     fontSize: '0.9rem',
-                    fontWeight: 600
+                    fontWeight: 600,
+                    borderTop: '1px solid #313244',
+                    borderBottom: 'none'
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <Shield size={18} />
-                        <span>System is secure and initialized successfully.</span>
+                        <span>Security: Initialized successfully.</span>
                     </div>
-                    <span style={{ color: '#89b4fa', opacity: 0.8 }}>Relational DB Connected</span>
+                    <span style={{ color: '#89b4fa', opacity: 0.8, fontSize: '0.8rem' }}>DB: Connected</span>
                 </div>
             </div>
 
@@ -122,15 +120,15 @@ const EnvironmentSection = () => {
                     For rapid backend testing, we use <strong>HTTPie</strong>. This ensures our Django/Postgres bridge is fully functional before deploying to Vercel.
                 </p>
 
-                <div style={{ background: 'var(--c-surface)', padding: '24px', borderRadius: '16px', border: '1px solid var(--c-surface2)' }}>
+                <div style={{ background: 'var(--c-surface)', padding: 'min(24px, 5vw)', borderRadius: '16px', border: '1px solid var(--c-surface2)', width: '100%', overflow: 'hidden' }}>
                     <h5 style={{ color: 'var(--c-text)', margin: '0 0 12px 0', fontSize: '0.9rem', textTransform: 'uppercase', opacity: 0.7 }}>Fetch Leaderboard (GET)</h5>
-                    <div style={{ background: '#11111b', padding: '16px', borderRadius: '12px', marginBottom: '24px', border: '1px solid #313244' }}>
-                        <code style={{ color: '#f9e2af' }}>python -m httpie GET http://localhost:8000/api/leaderboard/</code>
+                    <div style={{ background: '#11111b', padding: '16px', borderRadius: '12px', marginBottom: '24px', border: '1px solid #313244', overflowX: 'auto' }}>
+                        <code style={{ color: '#f9e2af', whiteSpace: 'nowrap' }}>python -m httpie GET http://localhost:8000/api/leaderboard/</code>
                     </div>
 
                     <h5 style={{ color: 'var(--c-text)', margin: '0 0 12px 0', fontSize: '0.9rem', textTransform: 'uppercase', opacity: 0.7 }}>Sync User Stats (POST)</h5>
-                    <div style={{ background: '#11111b', padding: '16px', borderRadius: '12px', border: '1px solid #313244' }}>
-                        <code style={{ color: '#f9e2af' }}>
+                    <div style={{ background: '#11111b', padding: '16px', borderRadius: '12px', border: '1px solid #313244', overflowX: 'auto' }}>
+                        <code style={{ color: '#f9e2af', whiteSpace: 'nowrap' }}>
                             python -m httpie POST http://localhost:8000/api/sync-stats/ \<br/>
                             firebase_uid="test_user" \<br/>
                             username="VibeoTesting" \<br/>
