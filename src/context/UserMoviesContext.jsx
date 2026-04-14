@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { doc, onSnapshot, updateDoc, arrayUnion, arrayRemove, setDoc, increment, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAuth } from './AuthContext';
@@ -114,7 +114,7 @@ export const UserMoviesProvider = ({ children }) => {
     }, [currentUser]);
 
     // MANUAL SYNC TRIGGER
-    const syncToBackend = async () => {
+    const syncToBackend = useCallback(async () => {
         if (!currentUser) return;
         console.log('🔄 Syncing user stats to Django backend...');
         try {
@@ -131,7 +131,7 @@ export const UserMoviesProvider = ({ children }) => {
         } catch (err) {
             console.error('❌ Sync failed:', err);
         }
-    };
+    }, [currentUser, totalWatchTime, streakData]);
 
     // BACKGROUND SYNC TO DJANGO (Leaderboard & Compliance)
     useEffect(() => {
@@ -151,8 +151,7 @@ export const UserMoviesProvider = ({ children }) => {
         if (!currentUser) return false;
         try {
             const userRef = doc(db, 'users', currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            let currentList = userSnap.exists() ? (userSnap.data().watchlist || []) : [];
+            let currentList = watchlist || [];
 
             // Prevent duplicates
             if (currentList.some(m => m.id === Number(movie.id))) {
@@ -183,11 +182,7 @@ export const UserMoviesProvider = ({ children }) => {
         if (!currentUser) return false;
         try {
             const userRef = doc(db, 'users', currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            if (!userSnap.exists()) return false;
-
-            const currentList = userSnap.data().watchlist || [];
-            const newList = currentList.filter(m => m.id !== Number(movie.id));
+            const newList = watchlist.filter(m => m.id !== Number(movie.id));
 
             await updateDoc(userRef, {
                 watchlist: newList
@@ -213,10 +208,7 @@ export const UserMoviesProvider = ({ children }) => {
         if (!currentUser) return false;
         try {
             const userRef = doc(db, 'users', currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            if (!userSnap.exists()) return await addToWatchlist(movie, newStatus);
-
-            const currentList = userSnap.data().watchlist || [];
+            const currentList = watchlist || [];
             const movieIndex = currentList.findIndex(m => m.id === Number(movie.id));
 
             if (movieIndex === -1) {
@@ -256,13 +248,13 @@ export const UserMoviesProvider = ({ children }) => {
     const toggleWatchlist = async (movie) => {
         if (!movie) return false;
         const simpleMovie = {
-            id: movie.id,
-            title: movie.title,
-            name: movie.name,
+            id: Number(movie.id),
+            title: movie.title || null,
+            name: movie.name || null,
             media_type: movie.media_type || (movie.name ? 'tv' : 'movie'),
-            poster_path: movie.poster_path,
-            vote_average: movie.vote_average,
-            release_date: movie.release_date || movie.first_air_date,
+            poster_path: movie.poster_path || null,
+            vote_average: movie.vote_average || 0,
+            release_date: movie.release_date || movie.first_air_date || null,
             genre_ids: movie.genre_ids || []
         };
 
@@ -276,20 +268,19 @@ export const UserMoviesProvider = ({ children }) => {
     const addToContinueWatching = async (movie) => {
         if (!currentUser || !movie) return;
         const simpleMovie = {
-            id: movie.id,
-            title: movie.title,
-            name: movie.name,
+            id: Number(movie.id),
+            title: movie.title || null,
+            name: movie.name || null,
             media_type: movie.media_type || (movie.name ? 'tv' : 'movie'),
-            poster_path: movie.poster_path,
-            vote_average: movie.vote_average,
-            release_date: movie.release_date || movie.first_air_date,
+            poster_path: movie.poster_path || null,
+            vote_average: movie.vote_average || 0,
+            release_date: movie.release_date || movie.first_air_date || null,
             timestamp: Date.now()
         };
 
         try {
             const userRef = doc(db, 'users', currentUser.uid);
-            const userSnap = await getDoc(userRef);
-            let currentList = userSnap.exists() ? (userSnap.data().continueWatching || []) : [];
+            let currentList = continueWatching || [];
             currentList = currentList.filter(m => m.id !== movie.id);
             currentList.unshift(simpleMovie);
             if (currentList.length > 20) currentList = currentList.slice(0, 20);
@@ -377,7 +368,16 @@ export const UserMoviesProvider = ({ children }) => {
                 const exactMovie = favoriteMovies.find(m => m.id === movie.id);
                 await updateDoc(userRef, { favoriteMovies: arrayRemove(exactMovie) });
             } else {
-                await updateDoc(userRef, { favoriteMovies: arrayUnion(movie) });
+                const simpleMovie = {
+                    id: Number(movie.id),
+                    title: movie.title || null,
+                    name: movie.name || null,
+                    media_type: movie.media_type || (movie.name ? 'tv' : 'movie'),
+                    poster_path: movie.poster_path || null,
+                    vote_average: movie.vote_average || 0,
+                    release_date: movie.release_date || movie.first_air_date || null
+                };
+                await updateDoc(userRef, { favoriteMovies: arrayUnion(simpleMovie) });
             }
             return true;
         } catch (error) {
@@ -399,15 +399,30 @@ export const UserMoviesProvider = ({ children }) => {
             const userSnap = await getDoc(userRef);
             let currentWatchlist = userSnap.exists() ? (userSnap.data().watchlist || []) : [];
 
-            // Format seen movies
+            // Format seen movies with defensive sanitization
             const newWatchlistItems = seen.map(movie => ({
-                ...movie,
                 id: Number(movie.id),
+                title: movie.title || null,
+                name: movie.name || null,
                 status: 'completed',
                 media_type: movie.media_type || (movie.name ? 'tv' : 'movie'),
+                poster_path: movie.poster_path || null,
+                vote_average: movie.vote_average || 0,
+                release_date: movie.release_date || movie.first_air_date || null,
                 genre_ids: movie.genre_ids || [],
                 addedAt: Date.now(),
                 updatedAt: Date.now()
+            }));
+
+            // Format favorites with defensive sanitization
+            const sanitizedFavorites = favorites.map(movie => ({
+                id: Number(movie.id),
+                title: movie.title || null,
+                name: movie.name || null,
+                media_type: movie.media_type || (movie.name ? 'tv' : 'movie'),
+                poster_path: movie.poster_path || null,
+                vote_average: movie.vote_average || 0,
+                release_date: movie.release_date || movie.first_air_date || null
             }));
 
             // Filter out any duplicates
@@ -418,7 +433,7 @@ export const UserMoviesProvider = ({ children }) => {
 
             await setDoc(userRef, {
                 onboarded: true,
-                favoriteMovies: favorites,
+                favoriteMovies: sanitizedFavorites,
                 watchlist: updatedWatchlist,
                 email: currentUser.email,
                 displayName: currentUser.displayName,
