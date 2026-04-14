@@ -83,14 +83,9 @@ const FlowPath = ({ color, active, delay }) => (
 const ArchitectureSection = () => {
     return (
         <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-            <h2 style={{
-                fontSize: '2.5rem',
-                color: 'var(--c-text)',
-                marginBottom: '16px',
-                fontWeight: 800
-            }}>Architecture Flow</h2>
+            <h2 className="docs-heading">Architecture Flow</h2>
             
-            <p style={{ color: 'var(--c-text2)', fontSize: '1.1rem', marginBottom: '48px', maxWidth: '800px' }}>
+            <p className="docs-subheading">
                 Visual map of how data moves from the frontend to the various services and databases.
             </p>
 
@@ -98,7 +93,7 @@ const ArchitectureSection = () => {
             <div style={{
                 background: 'var(--c-bg)',
                 borderRadius: '24px',
-                padding: '40px',
+                padding: 'min(40px, 5vw)',
                 border: '1px solid var(--c-surface2)',
                 marginBottom: '40px',
                 position: 'relative',
@@ -109,14 +104,24 @@ const ArchitectureSection = () => {
                     AI Serverless Flow (POST Requests)
                 </h3>
                 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
-                    <FlowNode icon={Layout} title="Vibeo Client" desc="React frontend sending POST request" color="137, 180, 250" delay={0.1} />
-                    <FlowPath color="137, 180, 250" active={true} delay={0.3} />
+                <div className="flow-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                    <div className="flow-node">
+                        <FlowNode icon={Layout} title="Vibeo Client" desc="React frontend sending POST request" color="137, 180, 250" delay={0.1} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="137, 180, 250" active={true} delay={0.3} />
+                    </div>
                     
-                    <FlowNode icon={Globe} title="Vercel Edge" desc="/api/groq (Serverless Auth Proxy)" color="249, 226, 175" delay={0.5} />
-                    <FlowPath color="245, 169, 127" active={true} delay={0.7} />
+                    <div className="flow-node">
+                        <FlowNode icon={Globe} title="Vercel Edge" desc="/api/groq (Serverless Auth Proxy)" color="249, 226, 175" delay={0.5} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="245, 169, 127" active={true} delay={0.7} />
+                    </div>
                     
-                    <FlowNode icon={Cpu} title="Groq API" desc="Llama 3 inference processing" color="245, 169, 127" pulse={true} delay={0.9} />
+                    <div className="flow-node">
+                        <FlowNode icon={Cpu} title="Groq API" desc="Llama 3 inference processing" color="245, 169, 127" pulse={true} delay={0.9} />
+                    </div>
                 </div>
             </div>
 
@@ -124,8 +129,9 @@ const ArchitectureSection = () => {
             <div style={{
                 background: 'var(--c-bg)',
                 borderRadius: '24px',
-                padding: '40px',
+                padding: 'min(40px, 5vw)',
                 border: '1px solid var(--c-surface2)',
+                marginBottom: '40px',
                 position: 'relative',
                 overflow: 'hidden'
             }}>
@@ -134,14 +140,24 @@ const ArchitectureSection = () => {
                     Auth & Database Flow (Realtime)
                 </h3>
                 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
-                    <FlowNode icon={Layout} title="Vibeo Client" desc="User signs in via Google" color="137, 180, 250" delay={0.1} />
-                    <FlowPath color="166, 227, 161" active={true} delay={0.3} />
+                <div className="flow-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                    <div className="flow-node">
+                        <FlowNode icon={Layout} title="Vibeo Client" desc="User signs in via Google" color="137, 180, 250" delay={0.1} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="166, 227, 161" active={true} delay={0.3} />
+                    </div>
                     
-                    <FlowNode icon={ShieldCheck} title="Firebase Auth" desc="Validates Identity & Tokens" color="166, 227, 161" delay={0.5} />
-                    <FlowPath color="137, 220, 235" active={true} delay={0.7} />
+                    <div className="flow-node">
+                        <FlowNode icon={ShieldCheck} title="Firebase Auth" desc="Validates Identity & Tokens" color="166, 227, 161" delay={0.5} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="137, 220, 235" active={true} delay={0.7} />
+                    </div>
                     
-                    <FlowNode icon={Database} title="Firestore DB" desc="Scoped CRUD operations" color="137, 220, 235" pulse={true} delay={0.9} />
+                    <div className="flow-node">
+                        <FlowNode icon={Database} title="Firestore DB" desc="Scoped CRUD operations" color="137, 220, 235" pulse={true} delay={0.9} />
+                    </div>
                 </div>
             </div>
 
@@ -149,8 +165,9 @@ const ArchitectureSection = () => {
             <div style={{
                 background: 'var(--c-bg)',
                 borderRadius: '24px',
-                padding: '40px',
+                padding: 'min(40px, 5vw)',
                 border: '1px solid var(--c-surface2)',
+                marginBottom: '40px',
                 position: 'relative',
                 overflow: 'hidden'
             }}>
@@ -159,14 +176,24 @@ const ArchitectureSection = () => {
                     React Context (Frontend Data Flow)
                 </h3>
                 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
-                    <FlowNode icon={Database} title="Auth Resolved" desc="User signs in, triggers AuthContext" color="137, 220, 235" delay={0.1} />
-                    <FlowPath color="203, 166, 247" active={true} delay={0.3} />
+                <div className="flow-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+                    <div className="flow-node">
+                        <FlowNode icon={Database} title="Auth Resolved" desc="User signs in, triggers AuthContext" color="137, 220, 235" delay={0.1} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="203, 166, 247" active={true} delay={0.3} />
+                    </div>
                     
-                    <FlowNode icon={Layout} title="UserContext" desc="Fetches specific watchlist & preferences" color="203, 166, 247" pulse={true} delay={0.5} />
-                    <FlowPath color="166, 227, 161" active={true} delay={0.7} />
+                    <div className="flow-node">
+                        <FlowNode icon={Layout} title="UserContext" desc="Fetches specific watchlist & preferences" color="203, 166, 247" pulse={true} delay={0.5} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="166, 227, 161" active={true} delay={0.7} />
+                    </div>
                     
-                    <FlowNode icon={Layout} title="App UI Render" desc="Hydrates Dashboard with personalized data" color="166, 227, 161" delay={0.9} />
+                    <div className="flow-node">
+                        <FlowNode icon={Layout} title="App UI Render" desc="Hydrates Dashboard with personalized data" color="166, 227, 161" delay={0.9} />
+                    </div>
                 </div>
             </div>
 
@@ -174,7 +201,7 @@ const ArchitectureSection = () => {
             <div style={{
                 background: 'var(--c-bg)',
                 borderRadius: '24px',
-                padding: '40px',
+                padding: 'min(40px, 5vw)',
                 border: '1px solid var(--c-surface2)',
                 position: 'relative',
                 overflow: 'hidden',
@@ -185,17 +212,31 @@ const ArchitectureSection = () => {
                     Onboarding Routing Intercepts
                 </h3>
                 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
-                    <FlowNode icon={Layout} title="App.jsx" desc="Root Router evaluates user auth" color="203, 166, 247" delay={0.1} />
-                    <FlowPath color="137, 180, 250" active={true} delay={0.3} />
+                <div className="flow-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                    <div className="flow-node">
+                        <FlowNode icon={Layout} title="App.jsx" desc="Root Router evaluates user auth" color="203, 166, 247" delay={0.1} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="137, 180, 250" active={true} delay={0.3} />
+                    </div>
                     
-                    <FlowNode icon={Network} title="Is Logged In?" desc="Checks currentUser via AuthContext" color="137, 180, 250" pulse={true} delay={0.5} />
-                    <FlowPath color="249, 226, 175" active={true} delay={0.7} />
+                    <div className="flow-node">
+                        <FlowNode icon={Network} title="Is Logged In?" desc="Checks currentUser via AuthContext" color="137, 180, 250" pulse={true} delay={0.5} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="249, 226, 175" active={true} delay={0.7} />
+                    </div>
                     
-                    <FlowNode icon={Database} title="Is isOnboarded true?" desc="Checks Firestore User document" color="249, 226, 175" pulse={true} delay={0.9} />
-                    <FlowPath color="166, 227, 161" active={true} delay={1.1} />
+                    <div className="flow-node">
+                        <FlowNode icon={Database} title="Is isOnboarded true?" desc="Checks Firestore User document" color="249, 226, 175" pulse={true} delay={0.9} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="166, 227, 161" active={true} delay={1.1} />
+                    </div>
                     
-                    <FlowNode icon={Layout} title="Allow Access" desc="Renders Home Dashboard (/)" color="166, 227, 161" delay={1.3} />
+                    <div className="flow-node">
+                        <FlowNode icon={Layout} title="Allow Access" desc="Renders Home Dashboard (/)" color="166, 227, 161" delay={1.3} />
+                    </div>
                 </div>
             </div>
 
@@ -203,7 +244,7 @@ const ArchitectureSection = () => {
             <div style={{
                 background: 'var(--c-bg)',
                 borderRadius: '24px',
-                padding: '40px',
+                padding: 'min(40px, 5vw)',
                 border: '1px solid var(--c-surface2)',
                 position: 'relative',
                 overflow: 'hidden',
@@ -214,17 +255,31 @@ const ArchitectureSection = () => {
                     Hybrid SQL Sync Flow (Compliance & Leaderboard)
                 </h3>
                 
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap' }}>
-                    <FlowNode icon={Layout} title="Vibeo Client" desc="Local User Progress (Streaks/Watch Time)" color="137, 180, 250" delay={0.1} pulse={true} />
-                    <FlowPath color="203, 166, 247" active={true} delay={0.3} />
+                <div className="flow-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                    <div className="flow-node">
+                        <FlowNode icon={Layout} title="Vibeo Client" desc="Local User Progress (Streaks/Watch Time)" color="137, 180, 250" delay={0.1} pulse={true} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="203, 166, 247" active={true} delay={0.3} />
+                    </div>
                     
-                    <FlowNode icon={Server} title="Django API" desc="Debounced Sync (3s) to Vercel/Python" color="203, 166, 247" delay={0.5} />
-                    <FlowPath color="243, 139, 168" active={true} delay={0.7} />
+                    <div className="flow-node">
+                        <FlowNode icon={Server} title="Django API" desc="Debounced Sync (3s) to Vercel/Python" color="203, 166, 247" delay={0.5} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="243, 139, 168" active={true} delay={0.7} />
+                    </div>
                     
-                    <FlowNode icon={Database} title="Neon Postgres" desc="Relational DB for Global Rankings" color="243, 139, 168" pulse={true} delay={0.9} />
-                    <FlowPath color="166, 227, 161" active={true} delay={1.1} />
+                    <div className="flow-node">
+                        <FlowNode icon={Database} title="Neon Postgres" desc="Relational DB for Global Rankings" color="243, 139, 168" pulse={true} delay={0.9} />
+                    </div>
+                    <div className="flow-path">
+                        <FlowPath color="166, 227, 161" active={true} delay={1.1} />
+                    </div>
                     
-                    <FlowNode icon={Layout} title="Leaderboard" desc="Global Ranked UI fetched via SQL" color="166, 227, 161" delay={1.3} />
+                    <div className="flow-node">
+                        <FlowNode icon={Layout} title="Leaderboard" desc="Global Ranked UI fetched via SQL" color="166, 227, 161" delay={1.3} />
+                    </div>
                 </div>
             </div>
 
