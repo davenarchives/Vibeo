@@ -11,12 +11,13 @@ export const useMovieDetail = (id, type = 'movie') => {
             const local = MOOD_MOVIES.find(m => m.id === Number(id));
             if (local) return local;
 
-            const [details, credits, videosRes, imagesRes, reviewsRes] = await Promise.all([
+            const [details, credits, videosRes, imagesRes, reviewsRes, releaseRes] = await Promise.all([
                 fetchTMDB(`/${type}/${id}`),
                 fetchTMDB(`/${type}/${id}/credits`),
                 fetchTMDB(`/${type}/${id}/videos`),
                 fetchTMDB(`/${type}/${id}/images?include_image_language=en,null`),
                 fetchTMDB(`/${type}/${id}/reviews`),
+                fetchTMDB(`/${type}/${id}/${type === 'movie' ? 'release_dates' : 'content_ratings'}`),
             ]);
 
             if (!details) throw new Error(`${type} not found`);
@@ -30,6 +31,16 @@ export const useMovieDetail = (id, type = 'movie') => {
                 vid => vid.site === 'YouTube' && vid.type === 'Trailer'
             );
 
+            // Extract US Certification
+            let certification = null;
+            if (type === 'movie') {
+                const usRelease = releaseRes?.results?.find(r => r.iso_3166_1 === 'US');
+                certification = usRelease?.release_dates?.find(rd => rd.certification)?.certification;
+            } else {
+                const usRating = releaseRes?.results?.find(r => r.iso_3166_1 === 'US');
+                certification = usRating?.rating;
+            }
+
             return {
                 ...details,
                 cast: (credits?.cast || []).slice(0, 20),
@@ -37,6 +48,7 @@ export const useMovieDetail = (id, type = 'movie') => {
                 trailerKey: trailer?.key || null,
                 backdrops: imagesRes?.backdrops?.slice(0, 15) || [],
                 reviews: reviewsRes?.results?.slice(0, 3) || [],
+                certification: certification || (details.adult ? 'R' : 'PG-13'),
             };
         },
         enabled: !!id, // Only run if ID exists
