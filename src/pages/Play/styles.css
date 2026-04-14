@@ -138,9 +138,9 @@
     inset: 0;
     width: 100%;
     height: 100%;
-    border: none;
     opacity: 0;
     transition: opacity 0.5s ease;
+    background: #000;
 }
 
 .play-iframe--ready {
@@ -317,8 +317,14 @@
     }
 
     .play-layout .play-player-section {
-        height: 56vw;
-        min-height: 220px;
+        height: auto;
+        aspect-ratio: 16 / 9;
+        min-height: 211px; /* 375 * 9/16 ≈ 211 */
+    }
+
+    .play-player-wrap {
+        height: 100%;
+        width: 100%;
     }
 
     .play-episode-panel {

@@ -25,20 +25,24 @@ const HF_MODEL = 'meta-llama/Llama-3.1-8B-Instruct';
 
 const TMDB_IMG_BASE = 'https://image.tmdb.org/t/p/w342';
 
-// Simple session cache for AI results
+// Simple session cache for AI results with a size limit
 const aiCache = new Map();
+const MAX_AI_CACHE_SIZE = 50;
 
 /**
  * Generate a semi-unique string key for conversation history
  */
 const getHistoryKey = (history) => {
-    return history.map(m => `${m.role}:${m.content}`).join('|');
+    if (!history || history.length === 0) return 'empty';
+    const lastMessage = history[history.length - 1];
+    // Key based on last message + depth of conversation for contextual cache hits
+    return `len:${history.length}|last:${lastMessage.role}:${lastMessage.content}`;
 };
 
 /**
  * System prompt that defines Vibey's personality and output format.
  */
-const SYSTEM_PROMPT = `You are Vibey, the friendly AI movie & TV recommendation assistant for Vibeo — a premium streaming app.
+const SYSTEM_PROMPT = `You are Vibey, the friendly AI movie & TV recommendation assistant for Vibeo.
 
 PERSONALITY:
 - You're enthusiastic, witty, and casual — like chatting with a movie-nerd friend.
@@ -292,7 +296,11 @@ export const sendVibeyMessage = async (conversationHistory) => {
 
     const result = { text, movies, provider, rawResponse };
 
-    // 7. Save to cache
+    // 7. Save to cache with size limit (FIFO)
+    if (aiCache.size >= MAX_AI_CACHE_SIZE) {
+        const oldestKey = aiCache.keys().next().value;
+        aiCache.delete(oldestKey);
+    }
     aiCache.set(cacheKey, result);
 
     return result;

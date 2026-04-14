@@ -57,10 +57,13 @@ const Search = () => {
             }
         };
 
-        performSearch();
+        const timeoutId = setTimeout(() => {
+            performSearch();
+        }, 300);
 
         return () => {
             isMounted = false;
+            clearTimeout(timeoutId);
         };
     }, [query]);
 
