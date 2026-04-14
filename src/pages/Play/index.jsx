@@ -11,18 +11,13 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { MOOD_MOVIES } from '@/data/moodData';
 import { useUserMovies } from '@/hooks/useUserMovies';
+import { fetchTMDB } from '@/api/tmdbClient';
 import { TMDB_API_KEY, STREAM_PROVIDERS, TMDB_IMAGE_BASE } from '@/config/constants';
 import '@/components/common/Loading/styles.css';
 import './styles.css';
 
 const provider = STREAM_PROVIDERS[0];
 
-/* ── Helper ── */
-const TMDB_BASE = 'https://api.themoviedb.org/3';
-const tmdbGet = async (path) => {
-    const res = await fetch(`${TMDB_BASE}${path}?api_key=${TMDB_API_KEY}&language=en-US`);
-    return res.ok ? res.json() : null;
-};
 
 const Play = () => {
     const { id } = useParams();
@@ -62,7 +57,7 @@ const Play = () => {
             addToContinueWatching(local);
             return;
         }
-        tmdbGet(`/${type}/${id}`).then(data => {
+        fetchTMDB(`/${type}/${id}`).then(data => {
             if (data) {
                 const t = data.title || data.name;
                 setTitle(t);
@@ -80,7 +75,7 @@ const Play = () => {
     /* ── Fetch episodes when activeSeason changes (TV only) ── */
     useEffect(() => {
         if (!isTV) return;
-        tmdbGet(`/tv/${id}/season/${activeSeason}`).then(data => {
+        fetchTMDB(`/tv/${id}/season/${activeSeason}`).then(data => {
             if (data?.episodes) {
                 setEpisodes(data.episodes);
                 // Set current episode meta
@@ -295,6 +290,7 @@ const Play = () => {
                                                 src={`${TMDB_IMAGE_BASE}${ep.still_path}`}
                                                 alt={ep.name}
                                                 className="play-episode-thumb"
+                                                loading="lazy"
                                             />
                                         ) : (
                                             <div className="play-episode-thumb play-episode-thumb--placeholder">
